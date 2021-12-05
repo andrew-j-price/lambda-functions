@@ -21,3 +21,23 @@ resource "aws_lambda_function" "simple_check_py" {
   })
 
 }
+
+resource "aws_cloudwatch_log_group" "simple_check_py" {
+  name              = "/aws/lambda/simple_check_py"
+  retention_in_days = 3
+}
+
+// NOTE: not necessary for all functions
+resource "aws_cloudwatch_event_target" "simple_check_py" {
+  rule      = aws_cloudwatch_event_rule.default_schedule.name
+  arn       = aws_lambda_function.simple_check_py.arn
+}
+
+// NOTE: not necessary for all functions
+resource "aws_lambda_permission" "simple_check_py" {
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.simple_check_py.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.default_schedule.arn
+}

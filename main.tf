@@ -54,3 +54,9 @@ resource "aws_iam_role" "lincas_lambda_role" {
 EOF
   managed_policy_arns = var.lambda_role_arn
 }
+
+resource "aws_cloudwatch_event_rule" "default_schedule" {
+  name                = "default-schedule"
+  description         = "Default schedule for auto-actioned functions"
+  schedule_expression = "rate(240 minutes)"
+}
