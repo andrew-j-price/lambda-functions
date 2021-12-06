@@ -1,24 +1,29 @@
 import os
 import json
 import requests
-import time
 import urllib3
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
-def lambda_handler(event, context):
-    print("Lambda function ARN:", context.invoked_function_arn)
-    print("CloudWatch log stream name:", context.log_stream_name)
-    print("CloudWatch log group name:", context.log_group_name)
-    print("Lambda Request ID:", context.aws_request_id)
-    print("Lambda function memory limits in MB:", context.memory_limit_in_mb)
-    # We have added a 1 second delay so you can see the time remaining in get_remaining_time_in_millis.
-    time.sleep(1)
-    print("Lambda time remaining in MS:", context.get_remaining_time_in_millis())
-    print(f"event is of type: {type(event)} and data: {event}")
-    print(f"context is of type: {type(context)} and data: {context}")
+def log_event_context(event, context):
+    """Prints out information on lambda invoked functions"""
+    print("FUNCTION: log_event_context")
+    if event:
+        print(f"EVENT: event is of type: {type(event)} and data: {event}")
+    if context:
+        print(f"CONTEXT: context is of type: {type(context)} and data: {context}")
+        print("CONTEXT: CloudWatch log group name:", context.log_group_name)
+        print("CONTEXT: CloudWatch log stream name:", context.log_stream_name)
+        print("CONTEXT: Lambda function ARN:", context.invoked_function_arn)
+        print("CONTEXT: Lambda Request ID:", context.aws_request_id)
+        print("CONTEXT: Lambda function memory limits in MB:", context.memory_limit_in_mb)
 
+
+def actions():
+    """Perform the actual work here"""
+    print("FUNCTION: actions")
+    # raise Exception("A forced error")
     aws_region = os.environ.get("AWS_REGION", "us-fake-3")
     """
     response = requests.get(
@@ -27,20 +32,69 @@ def lambda_handler(event, context):
     print(f"STATUS_CODE: {response.status_code}")
     data = json.loads(response.text)
     """
+    message_dict = {
+        # "attest_container ": data["host_name"],
+        "region ": aws_region,
+        # "remote_ip ": data["remote_ip"],
+    }
+    return message_dict
+
+
+def result_generator(status_code, message_dict):
+    """Returns the response to the lambda call
+
+    Args:
+        status_code (int): of HTTP status code, either 200 or 500
+        message_dict (dict): of the resulting response
+
+    Returns:
+        dict: of response
+    """
+    print("FUNCTION: result_generator")
+    print(
+        f"ANALYSIS: status_code is of type: {type(status_code)} and message_dict is of type: {type(message_dict)}"
+    )
     result = {
-        "statusCode": 200,
+        "statusCode": status_code,
         "headers": {"Content-Type": "application/json"},
-        "result": json.dumps(
-            {
-                # "attest_container ": data["host_name"],
-                "region ": aws_region,
-                # "remote_ip ": data["remote_ip"],
-            }
-        ),
+        "body": message_dict,
     }
     print(f"RESULT: {result}")
     return result
 
 
+def main(event=None, context=None):
+    """The main function that calls other functions
+
+    Args:
+        event (dict): Incoming payload
+        context (...): AWS Lambda context
+
+    Returns:
+        dict: of response
+    """
+    print("FUNCTION: main")
+    try:
+        log_event_context(event, context)
+        message_dict = actions()
+        response = result_generator(200, message_dict)
+    except Exception as e:
+        # print(f"Error: {repr(e)}")
+        response = result_generator(500, {"error": f"{repr(e)}"})
+    finally:
+        if context:
+            print(
+                "CONTEXT: Lambda time remaining in MS:", context.get_remaining_time_in_millis()
+            )
+        return response
+
+
+def lambda_handler(event, context):
+    """Entry point for lambda"""
+    response = main(event, context)
+    return response
+
+
 if __name__ == "__main__":
-    lambda_handler("SOME_EVENT", "SOME_CONEXT")
+    """Entry point for local testing"""
+    main()

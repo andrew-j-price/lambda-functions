@@ -8,6 +8,7 @@ python -m pip install --target . requests
 
 # testing
 python simple_check_py/lambda_function.py
+docker run -it --rm  -v $(pwd):/git python:3.8-bullseye python /git/simple_check_py/lambda_function.py
 
 # styling
 black simple_check_py/lambda_function.py 
