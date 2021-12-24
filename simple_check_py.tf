@@ -12,6 +12,7 @@ resource "aws_lambda_function" "simple_check_py" {
   runtime          = "python3.8"
   timeout          = 60
   source_code_hash = filebase64sha256(data.archive_file.simple_check_py.output_path)
+  // vpc_config is optional, internet bound traffic does not have to be in VPC, but VPC bound traffic must be in private subnet
   vpc_config {
     subnet_ids         = var.subnet_ids
     security_group_ids = [aws_security_group.lambda_default_secgroup.id]

@@ -25,17 +25,15 @@ def actions():
     print("FUNCTION: actions")
     # raise Exception("A forced error")
     aws_region = os.environ.get("AWS_REGION", "us-fake-3")
-    """
-    response = requests.get(
-        "https://attest.linecas.com/default", verify=False, timeout=30.0
-    )
+    whatismyip = requests.get("https://whatismyip.akamai.com/", verify=False, timeout=5.0)
+    response = requests.get("https://attest.linecas.com/default", verify=False, timeout=5.0)
     print(f"STATUS_CODE: {response.status_code}")
     data = json.loads(response.text)
-    """
     message_dict = {
-        # "attest_container ": data["host_name"],
+        "attest_container ": data["host_name"],
         "region ": aws_region,
-        # "remote_ip ": data["remote_ip"],
+        "remote_ip ": data["remote_ip"],
+        "whatismyip": whatismyip.text,
     }
     return message_dict
 
@@ -51,9 +49,7 @@ def result_generator(status_code, message_dict):
         dict: of response
     """
     print("FUNCTION: result_generator")
-    print(
-        f"ANALYSIS: status_code is of type: {type(status_code)} and message_dict is of type: {type(message_dict)}"
-    )
+    print(f"ANALYSIS: status_code is of type: {type(status_code)} and message_dict is of type: {type(message_dict)}")
     result = {
         "statusCode": status_code,
         "headers": {"Content-Type": "application/json"},
@@ -84,7 +80,8 @@ def main(event=None, context=None):
     finally:
         if context:
             print(
-                "CONTEXT: Lambda time remaining in MS:", context.get_remaining_time_in_millis()
+                "CONTEXT: Lambda time remaining in MS:",
+                context.get_remaining_time_in_millis(),
             )
         return response
 
