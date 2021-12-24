@@ -25,18 +25,38 @@ def actions():
     print("FUNCTION: actions")
     # raise Exception("A forced error")
     aws_region = os.environ.get("AWS_REGION", "us-fake-3")
-    whatismyip = requests.get("https://whatismyip.akamai.com/", verify=False, timeout=5.0)
     response = requests.get("https://attest.linecas.com/default", verify=False, timeout=5.0)
     print(f"STATUS_CODE: {response.status_code}")
     data = json.loads(response.text)
     message_dict = {
         "attest_container ": data["host_name"],
+        "ipv4": get_ipv4(),
+        "ipv6": get_ipv6(),
         "region ": aws_region,
         "remote_ip ": data["remote_ip"],
-        "whatismyip": whatismyip.text,
+
     }
     return message_dict
 
+def get_ipv4():
+    print("FUNCTION: get_ipv4")
+    try:
+        response = requests.get("http://whatismyip.akamai.com/", verify=False, timeout=2.0)
+        if response.status_code == 200:
+            return response.text
+    except Exception as e:
+        print(f"Error: {repr(e)}")
+        return None
+
+def get_ipv6():
+    print("FUNCTION: get_ipv6")
+    try:
+        response = requests.get("http://ipv6.whatismyip.akamai.com/", verify=False, timeout=2.0)
+        if response.status_code == 200:
+            return response.text
+    except Exception as e:
+        print(f"Error: {repr(e)}")
+        return None
 
 def result_generator(status_code, message_dict):
     """Returns the response to the lambda call
@@ -75,7 +95,7 @@ def main(event=None, context=None):
         message_dict = actions()
         response = result_generator(200, message_dict)
     except Exception as e:
-        # print(f"Error: {repr(e)}")
+        print(f"Error: {repr(e)}")
         response = result_generator(500, {"error": f"{repr(e)}"})
     finally:
         if context:
