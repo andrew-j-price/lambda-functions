@@ -1,5 +1,15 @@
 # lambda-functions
 
+## sample usage
+```golang
+module "lambda_functions" {
+  source      = "github.com/andrew-j-price/lambda-functions"
+  common_tags = merge(local.common_tags, var.global_tags)
+  subnet_ids  = [data.terraform_remote_state.core.outputs.private_subnets[0], data.terraform_remote_state.core.outputs.private_subnets[1]]
+  vpc_id      = data.terraform_remote_state.core.outputs.vpc_id
+}
+```
+
 ## python function
 ```bash
 # install packages

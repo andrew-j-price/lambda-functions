@@ -25,38 +25,46 @@ def actions():
     print("FUNCTION: actions")
     # raise Exception("A forced error")
     aws_region = os.environ.get("AWS_REGION", "us-fake-3")
-    response = requests.get("https://attest.linecas.com/default", verify=False, timeout=5.0)
-    print(f"STATUS_CODE: {response.status_code}")
-    data = json.loads(response.text)
     message_dict = {
-        "attest_container ": data["host_name"],
+        "attest_container": get_attest(),
         "ipv4": get_ipv4(),
         "ipv6": get_ipv6(),
-        "region ": aws_region,
-        "remote_ip ": data["remote_ip"],
-
+        "region": aws_region,
     }
     return message_dict
+
+def get_attest():
+    print("FUNCTION: get_attest")
+    try:
+        response = requests.get("https://attest.linecas.com/default", verify=False, timeout=3.0)
+        if response.status_code == 200:
+            data = json.loads(response.text)
+            return data["host_name"]
+        else:
+            print(f"STATUS_CODE: {response.status_code}")
+    except Exception as e:
+        print(f"Error: {repr(e)}")
+    return None
 
 def get_ipv4():
     print("FUNCTION: get_ipv4")
     try:
-        response = requests.get("http://whatismyip.akamai.com/", verify=False, timeout=2.0)
+        response = requests.get("http://whatismyip.akamai.com/", verify=False, timeout=3.0)
         if response.status_code == 200:
             return response.text
     except Exception as e:
         print(f"Error: {repr(e)}")
-        return None
+    return None
 
 def get_ipv6():
     print("FUNCTION: get_ipv6")
     try:
-        response = requests.get("http://ipv6.whatismyip.akamai.com/", verify=False, timeout=2.0)
+        response = requests.get("http://ipv6.whatismyip.akamai.com/", verify=False, timeout=3.0)
         if response.status_code == 200:
             return response.text
     except Exception as e:
         print(f"Error: {repr(e)}")
-        return None
+    return None
 
 def result_generator(status_code, message_dict):
     """Returns the response to the lambda call

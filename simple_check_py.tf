@@ -12,15 +12,21 @@ resource "aws_lambda_function" "simple_check_py" {
   runtime          = "python3.8"
   timeout          = 60
   source_code_hash = filebase64sha256(data.archive_file.simple_check_py.output_path)
-  // vpc_config is optional, internet bound traffic does not have to be in VPC, but VPC bound traffic must be in private subnet
+  /* NOTES:
+     vpc_config is optional, internet bound traffic does not have to be in VPC, but VPC bound traffic must be in private subnet
+     For IPv4 outbound traffic, VPC needs NAT Gateway or NAT Instance
+     For IPv6 outbound traffic, tried egress-only-gateway but would not work for Lambda functions however did work on EC2 instances in the same private subnet
+  */
+  /*
   vpc_config {
     subnet_ids         = var.subnet_ids
     security_group_ids = [aws_security_group.lambda_default_secgroup.id]
   }
+  */
   tags = merge(var.common_tags, {
     func = "simple_check_py"
   })
-
+  depends_on = [aws_cloudwatch_log_group.simple_check_py]
 }
 
 resource "aws_cloudwatch_log_group" "simple_check_py" {
@@ -30,8 +36,8 @@ resource "aws_cloudwatch_log_group" "simple_check_py" {
 
 // NOTE: not necessary for all functions
 resource "aws_cloudwatch_event_target" "simple_check_py" {
-  rule      = aws_cloudwatch_event_rule.default_schedule.name
-  arn       = aws_lambda_function.simple_check_py.arn
+  rule = aws_cloudwatch_event_rule.default_schedule.name
+  arn  = aws_lambda_function.simple_check_py.arn
 }
 
 // NOTE: not necessary for all functions
