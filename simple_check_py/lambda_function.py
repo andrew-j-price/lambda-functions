@@ -33,6 +33,7 @@ def actions():
     }
     return message_dict
 
+
 def get_attest():
     print("FUNCTION: get_attest")
     try:
@@ -46,6 +47,7 @@ def get_attest():
         print(f"Error: {repr(e)}")
     return None
 
+
 def get_ipv4():
     print("FUNCTION: get_ipv4")
     try:
@@ -56,6 +58,7 @@ def get_ipv4():
         print(f"Error: {repr(e)}")
     return None
 
+
 def get_ipv6():
     print("FUNCTION: get_ipv6")
     try:
@@ -65,6 +68,7 @@ def get_ipv6():
     except Exception as e:
         print(f"Error: {repr(e)}")
     return None
+
 
 def result_generator(status_code, message_dict):
     """Returns the response to the lambda call
