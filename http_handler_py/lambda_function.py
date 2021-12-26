@@ -1,9 +1,6 @@
 import json
 import os
-import requests
-import urllib3
-
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+from uuid import uuid4
 
 
 def log_event_context(event, context):
@@ -20,54 +17,16 @@ def log_event_context(event, context):
         print("CONTEXT: Lambda function memory limits in MB:", context.memory_limit_in_mb)
 
 
-def actions():
+def actions(event):
     """Perform the actual work here"""
     print("FUNCTION: actions")
     # raise Exception("A forced error")
     aws_region = os.environ.get("AWS_REGION", "us-fake-3")
     message_dict = {
-        "attest_container": get_attest(),
-        "ipv4": get_ipv4(),
-        "ipv6": get_ipv6(),
         "region": aws_region,
+        "uuid": str(uuid4()),
     }
     return message_dict
-
-
-def get_attest():
-    print("FUNCTION: get_attest")
-    try:
-        response = requests.get("https://attest.linecas.com/default", verify=False, timeout=3.0)
-        if response.status_code == 200:
-            data = json.loads(response.text)
-            return data["host_name"]
-        else:
-            print(f"STATUS_CODE: {response.status_code}")
-    except Exception as e:
-        print(f"Error: {repr(e)}")
-    return None
-
-
-def get_ipv4():
-    print("FUNCTION: get_ipv4")
-    try:
-        response = requests.get("http://whatismyip.akamai.com/", verify=False, timeout=3.0)
-        if response.status_code == 200:
-            return response.text
-    except Exception as e:
-        print(f"Error: {repr(e)}")
-    return None
-
-
-def get_ipv6():
-    print("FUNCTION: get_ipv6")
-    try:
-        response = requests.get("http://ipv6.whatismyip.akamai.com/", verify=False, timeout=3.0)
-        if response.status_code == 200:
-            return response.text
-    except Exception as e:
-        print(f"Error: {repr(e)}")
-    return None
 
 
 def result_generator(status_code, message_dict):
@@ -85,7 +44,8 @@ def result_generator(status_code, message_dict):
     result = {
         "statusCode": status_code,
         "headers": {"Content-Type": "application/json"},
-        "body": message_dict,
+        "body": json.dumps(message_dict),
+        "isBase64Encoded": False,
     }
     print(f"RESULT: {result}")
     return result
@@ -104,7 +64,7 @@ def main(event=None, context=None):
     print("FUNCTION: main")
     try:
         log_event_context(event, context)
-        message_dict = actions()
+        message_dict = actions(event)
         response = result_generator(200, message_dict)
     except Exception as e:
         print(f"Error: {repr(e)}")

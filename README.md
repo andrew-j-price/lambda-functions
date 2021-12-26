@@ -11,6 +11,8 @@ module "lambda_functions" {
 ```
 
 ## python function
+
+### simple_check_py
 ```bash
 # install packages
 cd <dir>
@@ -28,6 +30,26 @@ flake8 --max-line-length 120 simple_check_py/lambda_function.py
 aws lambda list-functions
 aws lambda invoke --function-name simple_check_py simple_check_py.log && cat simple_check_py.log
 aws lambda invoke --function-name simple_check_py --log-type Tail --query 'LogResult' --output text |  base64 -d
+```
+
+### http_handler_py
+```bash
+# install packages
+cd <dir>
+# python -m pip install --target . requests
+
+# testing (either command)
+python http_handler_py/lambda_function.py
+docker run -it --rm  -v $(pwd):/git python:3.8-bullseye python /git/http_handler_py/lambda_function.py
+
+# styling
+black --line-length 120 http_handler_py/lambda_function.py 
+flake8 --max-line-length 120 http_handler_py/lambda_function.py 
+
+# cli
+aws lambda list-functions
+aws lambda invoke --function-name http_handler_py http_handler_py.log && cat http_handler_py.log
+aws lambda invoke --function-name http_handler_py --log-type Tail --query 'LogResult' --output text |  base64 -d
 ```
 
 ## CloudWatch
