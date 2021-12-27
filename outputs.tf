@@ -1,7 +1,7 @@
 # curl "$(terraform output -raw api_gw_base_url)/hello"
 output "api_gw_base_url" {
   description = "Base URL for API Gateway stage."
-  value = aws_apigatewayv2_stage.lambda.invoke_url
+  value       = aws_apigatewayv2_stage.lambda.invoke_url
 }
 
 output "function_http_handler_py_name" {
