@@ -34,17 +34,42 @@ resource "aws_cloudwatch_log_group" "simple_check_py" {
   retention_in_days = 3
 }
 
-// NOTE: not necessary for all functions
+// TRIGGER: EventBridge (CloudWatch Events)
 resource "aws_cloudwatch_event_target" "simple_check_py" {
   rule = aws_cloudwatch_event_rule.default_schedule.name
   arn  = aws_lambda_function.simple_check_py.arn
 }
 
-// NOTE: not necessary for all functions
+// TRIGGER: EventBridge (CloudWatch Events)
 resource "aws_lambda_permission" "simple_check_py" {
   statement_id  = "AllowExecutionFromCloudWatch"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.simple_check_py.function_name
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.default_schedule.arn
+}
+
+// SNS Integration
+resource "aws_cloudwatch_metric_alarm" "simple_check_py_failure" {
+  alarm_name                = "simple_check_py_failure"
+  comparison_operator       = "GreaterThanOrEqualToThreshold"
+  evaluation_periods        = 2
+  threshold                 = 1
+  alarm_actions             = [aws_sns_topic.notifications_topic.arn]
+  insufficient_data_actions = []
+  metric_query {
+    id    = "errors"
+    label = "Errors"
+    metric {
+      metric_name = "Errors"
+      namespace   = "AWS/Lambda"
+      period      = "600"
+      stat        = "Sum"
+      unit        = "Count"
+      dimensions = {
+        FunctionName = aws_lambda_function.simple_check_py.function_name
+      }
+    }
+    return_data = true
+  }
 }
