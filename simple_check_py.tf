@@ -49,12 +49,13 @@ resource "aws_lambda_permission" "simple_check_py" {
   source_arn    = aws_cloudwatch_event_rule.default_schedule.arn
 }
 
-// SNS Integration
+// Lambda Function failire - SNS Integration
+// NOTE: ideally this will not occur with our error handling and preference to Return Code
 resource "aws_cloudwatch_metric_alarm" "simple_check_py_failure" {
   alarm_name                = "simple_check_py_failure"
   comparison_operator       = "GreaterThanOrEqualToThreshold"
-  evaluation_periods        = 2
   threshold                 = 1
+  evaluation_periods        = 2
   alarm_actions             = [aws_sns_topic.notifications_topic.arn]
   insufficient_data_actions = []
   metric_query {
@@ -74,6 +75,7 @@ resource "aws_cloudwatch_metric_alarm" "simple_check_py_failure" {
   }
 }
 
+// Return Code - Metric Log
 resource "aws_cloudwatch_log_metric_filter" "simple_check_return_code" {
   name           = "Filter - SimpleCheckPy - ReturnCode"
   pattern        = "{ $.return_code = \"*\" }"
@@ -87,6 +89,58 @@ resource "aws_cloudwatch_log_metric_filter" "simple_check_return_code" {
   }
 }
 
+// Return Code - SNS Integration
+resource "aws_cloudwatch_metric_alarm" "simple_check_return_code_failure" {
+  namespace                 = "AWS/Lambda"
+  alarm_name                = "simple_check_return_code_failure"
+  metric_name               = aws_cloudwatch_log_metric_filter.simple_check_return_code.name
+  comparison_operator       = "GreaterThanOrEqualToThreshold"
+  threshold                 = 1
+  evaluation_periods        = 2
+  period                    = 10
+  statistic                 = "Maximum"
+  alarm_actions             = [aws_sns_topic.notifications_topic.arn]
+  insufficient_data_actions = []
+}
+
+// Return Code - Dashboard
+resource "aws_cloudwatch_dashboard" "main" {
+  dashboard_name = "SimpleCheckDashboard"
+  dashboard_body = <<EOF
+{
+    "widgets": [
+        {
+            "type": "metric",
+            "x": 0,
+            "y": 0,
+            "width": 24,
+            "height": 6,
+            "properties": {
+                "metrics": [
+                    [ { "expression": "FILL(METRICS(), LINEAR)", "label": "Trend", "id": "e1", "region": "us-east-2" } ],
+                    [ "LogMetrics", "LambdaSimpleCheckPyReturnCode", { "id": "m1" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "us-east-2",
+                "stat": "Maximum",
+                "period": 1,
+                "title": "LambdaSimpleCheckPyReturnCode",
+                "setPeriodToTimeRange": true,
+                "yAxis": {
+                    "left": {
+                        "label": "Return Code"
+                    }
+                }
+            }
+        }
+    ]
+}
+EOF
+}
+
+/*
+// NOTE: not as useful, but keeping for reference
 resource "aws_cloudwatch_log_metric_filter" "simple_check_py_success" {
   name           = "Filter - SimpleCheckPy - Success"
   pattern        = "{ $.return_code = 0 }"
@@ -110,6 +164,7 @@ resource "aws_cloudwatch_log_metric_filter" "simple_check_py_failure" {
     value     = "1"
   }
 }
+*/
 
 // NOTE: populates CloudWatch - Log Insights
 resource "aws_cloudwatch_query_definition" "simple_check_py_return_code_failures" {

@@ -7,7 +7,7 @@ resource "aws_sns_topic_subscription" "subscription_email" {
   topic_arn              = aws_sns_topic.notifications_topic.arn
   protocol               = "email"
   endpoint               = var.sns_emails[count.index]
-  endpoint_auto_confirms = true
+  endpoint_auto_confirms = false
 }
 
 resource "aws_sns_topic_subscription" "subscription_webhook" {
