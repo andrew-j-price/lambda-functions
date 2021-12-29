@@ -30,6 +30,11 @@ flake8 --max-line-length 120 simple_check_py/lambda_function.py
 aws lambda list-functions
 aws lambda invoke --function-name simple_check_py simple_check_py.log && cat simple_check_py.log
 aws lambda invoke --function-name simple_check_py --log-type Tail --query 'LogResult' --output text |  base64 -d
+
+# logs
+LOG_GROUP='/aws/lambda/simple_check_py'
+aws logs get-log-events --log-group-name $LOG_GROUP --log-stream-name `aws logs describe-log-streams --log-group-name $LOG_GROUP --max-items 1 --order-by LastEventTime --descending --query logStreams[].logStreamName --output text | head -n 1` --query events[].message --output text
+
 ```
 
 ### http_handler_py
