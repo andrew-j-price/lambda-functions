@@ -74,6 +74,19 @@ resource "aws_cloudwatch_metric_alarm" "simple_check_py_failure" {
   }
 }
 
+resource "aws_cloudwatch_log_metric_filter" "simple_check_return_code" {
+  name           = "Filter - SimpleCheckPy - ReturnCode"
+  pattern        = "{ $.return_code = \"*\" }"
+  log_group_name = aws_cloudwatch_log_group.simple_check_py.name
+
+  metric_transformation {
+    name      = "LambdaSimpleCheckPyReturnCode"
+    namespace = "LogMetrics"
+    value     = "$.return_code"
+    unit      = "None"
+  }
+}
+
 resource "aws_cloudwatch_log_metric_filter" "simple_check_py_success" {
   name           = "Filter - SimpleCheckPy - Success"
   pattern        = "{ $.return_code = 0 }"
@@ -82,7 +95,7 @@ resource "aws_cloudwatch_log_metric_filter" "simple_check_py_success" {
   metric_transformation {
     name      = "LambdaSimpleCheckPyReturnCodeSuccess"
     namespace = "LogMetrics"
-    value     = "1"
+    value     = "0"
   }
 }
 
