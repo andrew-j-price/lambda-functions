@@ -3,29 +3,26 @@ import logging
 import os
 from uuid import uuid4
 
-logging.basicConfig(level=logging.INFO, format="[%(levelname)s][%(funcName)s] %(message)s")
+logging.basicConfig(level=logging.INFO, format="[%(levelname)s][%(funcName)s] %(message)s", force=True)
 
 
 def log_event_context(event, context):
-    """Prints out information on lambda invoked functions"""
-    print("FUNCTION: log_event_context")
+    """Logs information on invoked Lambda function"""
     if event:
-        print(f"EVENT: event is of type: {type(event)} and data: {event}")
+        logging.info(f"EVENT: event is of type: {type(event)} and data: {event}")
     if context:
-        print(f"CONTEXT: context is of type: {type(context)} and data: {context}")
-        print("CONTEXT: CloudWatch log group name:", context.log_group_name)
-        print("CONTEXT: CloudWatch log stream name:", context.log_stream_name)
-        print("CONTEXT: Lambda function ARN:", context.invoked_function_arn)
-        print("CONTEXT: Lambda Request ID:", context.aws_request_id)
-        print("CONTEXT: Lambda function memory limits in MB:", context.memory_limit_in_mb)
+        logging.info(f"CONTEXT: context is of type: {type(context)} and data: {context}")
+        logging.info(f"CONTEXT: CloudWatch log group name: {context.log_group_name}")
+        logging.info(f"CONTEXT: CloudWatch log stream name: {context.log_stream_name}")
+        logging.info(f"CONTEXT: Lambda function ARN: {context.invoked_function_arn}")
+        logging.info(f"CONTEXT: Lambda Request ID: {context.aws_request_id}")
+        logging.info(f"CONTEXT: Lambda function memory limits in MB: {context.memory_limit_in_mb}")
 
 
-def actions(event):
+def actions():
     """Perform the actual work here"""
-    print("FUNCTION: actions")
-    aws_region = os.environ.get("AWS_REGION", "us-fake-3")
     message_dict = {
-        "region": aws_region,
+        "region": os.environ.get("AWS_REGION", "us-fake-3"),
         "uuid": str(uuid4()),
     }
     # raise Exception("A forced error")
@@ -42,7 +39,6 @@ def response_generator(status_code, message_dict):
     Returns:
         dict: of response
     """
-    print("FUNCTION: response_generator")
     logging.debug(f"status_code is of type: {type(status_code)} and message_dict is of type: {type(message_dict)}")
     result = {
         "statusCode": status_code,
@@ -54,30 +50,26 @@ def response_generator(status_code, message_dict):
 
 
 def main(event=None, context=None):
-    """The main function that calls other functions
+    """The main function that controls flow and error handling
 
     Args:
         event (dict): Incoming payload
-        context (...): AWS Lambda context
+        context (LambdaContext): AWS Lambda context
 
     Returns:
         dict: of response
     """
-    print("FUNCTION: main")
     try:
         log_event_context(event, context)
-        message_dict = actions(event)
+        message_dict = actions()
         response = response_generator(200, message_dict)
     except Exception as e:
-        print(f"Error: {repr(e)}")
-        response = response_generator(500, {"error": f"{repr(e)}"})
+        logging.error(f"EXCEPTION: {str(e)}")
+        response = response_generator(500, {"exception": f"{str(e)}"})
     finally:
         if context:
-            print(
-                "CONTEXT: Lambda time remaining in MS:",
-                context.get_remaining_time_in_millis(),
-            )
-        print(f"RESPONSE: {response}")
+            logging.info(f"CONTEXT: Lambda time remaining in MS: {context.get_remaining_time_in_millis()}")
+        logging.info(f"RESPONSE: {response}")
         return response
 
 

@@ -2,7 +2,6 @@ import json
 import logging
 import os
 import requests
-import sys
 import urllib3
 
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s][%(funcName)s] %(message)s", force=True)
@@ -14,7 +13,7 @@ class LambdaHandler:
         self.return_code = 0
 
     def log_event_context(self, event, context):
-        """Logs information on lambda invoked functions"""
+        """Logs information on invoked Lambda function"""
         if event:
             logging.info(f"EVENT: event is of type: {type(event)} and data: {event}")
         if context:
@@ -42,7 +41,7 @@ class LambdaHandler:
                 logging.error(f"RESPONSE_TEXT: {response.text}")
                 self.return_code = 2
         except Exception as e:
-            logging.error(f"Exception: {repr(e)}")
+            logging.error(f"EXCEPTION: {str(e)}")
             self.return_code = 3
         return None
 
@@ -61,7 +60,7 @@ class LambdaHandler:
                 logging.error(f"RESPONSE_TEXT: {response.text}")
                 self.return_code = 4
         except Exception as e:
-            logging.error(f"Exception: {repr(e)}")
+            logging.error(f"EXCEPTION: {str(e)}")
             self.return_code = 4
         return None
 
@@ -82,19 +81,22 @@ class LambdaHandler:
                 # NOTE: expected to fail, therefore commenting out
                 # self.return_code = 6
         except Exception as e:
-            logging.error(f"Exception: {repr(e)}")
+            logging.error(f"EXCEPTION: {str(e)}")
             # NOTE: expected to fail, therefore commenting out
             # self.return_code = 6
         return None
 
     def actions(self):
-        """Calls other functions and logs desired task output"""
-        aws_region = os.environ.get("AWS_REGION", "us-fake-3")
+        """Calls other functions and aggregates results
+
+        Returns:
+            dict: of desired output
+        """
         all_results = {
             "attest_container": self.get_attest(),
             "ipv4": self.get_ipv4(),
             "ipv6": self.get_ipv6(),
-            "region": aws_region,
+            "region": os.environ.get("AWS_REGION", "us-fake-3"),
             "return_code": self.return_code,
         }
         return all_results
@@ -104,20 +106,25 @@ class LambdaHandler:
 
         Args:
             event (dict): Incoming payload
-            context (...): AWS Lambda context
+            context (LambdaContext): AWS Lambda context
         """
         try:
             self.log_event_context(event, context)
             response = self.actions()
         except Exception as e:
-            logging.error(f"Exception: {repr(e)}")
+            logging.error(f"EXCEPTION: {str(e)}")
             self.return_code = 1
-            response = f"Error: {repr(e)}"
+            response = {"exception": str(e), "return_code": self.return_code}
         finally:
             if context:
                 logging.info(f"CONTEXT: Lambda time remaining in MS: {context.get_remaining_time_in_millis()}")
-            logging.info(f"return_code: {self.return_code}")
-            logging.info(f"response: {response}")
+            if self.return_code == 0:
+                logging.info(f"RETURN_CODE: {self.return_code}")
+                logging.info(f"RESPONSE: {response}")
+            else:
+                logging.error(f"RETURN_CODE: {self.return_code}")
+                logging.error(f"RESPONSE: {response}")
+            print(response)
             return response
 
 

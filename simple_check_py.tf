@@ -73,3 +73,34 @@ resource "aws_cloudwatch_metric_alarm" "simple_check_py_failure" {
     return_data = true
   }
 }
+
+resource "aws_cloudwatch_query_definition" "simple_check_py_return_code_failures" {
+  name = "lambda-simple_check_py-return_code-failures"
+
+  log_group_names = [aws_cloudwatch_log_group.simple_check_py.name]
+
+  query_string = <<EOF
+ fields @timestamp, @message, @return_code
+ | filter @message like "RESPONSE:"
+ | filter return_code != 0
+ | sort @timestamp desc
+ | limit 20
+ | stats count() by @message
+EOF
+}
+
+// NOTE: alternative: stats count() by @message
+resource "aws_cloudwatch_query_definition" "simple_check_py_return_code_success" {
+  name = "lambda-simple_check_py-return_code-success"
+
+  log_group_names = [aws_cloudwatch_log_group.simple_check_py.name]
+
+  query_string = <<EOF
+ fields @timestamp, @message, @return_code
+ | filter @message like "RESPONSE:"
+ | filter return_code = 0
+ | sort @timestamp desc
+ | limit 20
+ | stats count() by @message
+EOF
+}
