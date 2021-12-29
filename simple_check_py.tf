@@ -74,9 +74,33 @@ resource "aws_cloudwatch_metric_alarm" "simple_check_py_failure" {
   }
 }
 
-resource "aws_cloudwatch_query_definition" "simple_check_py_return_code_failures" {
-  name = "lambda-simple_check_py-return_code-failures"
+resource "aws_cloudwatch_log_metric_filter" "simple_check_py_success" {
+  name           = "Filter - SimpleCheckPy - Success"
+  pattern        = "{ $.return_code = 0 }"
+  log_group_name = aws_cloudwatch_log_group.simple_check_py.name
 
+  metric_transformation {
+    name      = "LambdaSimpleCheckPyReturnCodeSuccess"
+    namespace = "LogMetrics"
+    value     = "1"
+  }
+}
+
+resource "aws_cloudwatch_log_metric_filter" "simple_check_py_failure" {
+  name           = "Filter - SimpleCheckPy - Failure"
+  pattern        = "{ $.return_code != 0 }"
+  log_group_name = aws_cloudwatch_log_group.simple_check_py.name
+
+  metric_transformation {
+    name      = "LambdaSimpleCheckPyReturnCodeFailure"
+    namespace = "LogMetrics"
+    value     = "1"
+  }
+}
+
+// NOTE: populates CloudWatch - Log Insights
+resource "aws_cloudwatch_query_definition" "simple_check_py_return_code_failures" {
+  name            = "Lambda - SimpleCheckPy - ReturnCode - Failures"
   log_group_names = [aws_cloudwatch_log_group.simple_check_py.name]
 
   query_string = <<EOF
@@ -91,8 +115,7 @@ EOF
 
 // NOTE: alternative: stats count() by @message
 resource "aws_cloudwatch_query_definition" "simple_check_py_return_code_success" {
-  name = "lambda-simple_check_py-return_code-success"
-
+  name            = "Lambda - SimpleCheckPy - ReturnCode - Success"
   log_group_names = [aws_cloudwatch_log_group.simple_check_py.name]
 
   query_string = <<EOF

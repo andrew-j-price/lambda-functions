@@ -26,9 +26,12 @@ docker run -it --rm  -v $(pwd):/git python:3.8-bullseye python /git/simple_check
 black --line-length 120 simple_check_py/lambda_function.py 
 flake8 --max-line-length 120 simple_check_py/lambda_function.py 
 
-# cli
+# cli v1
 aws lambda list-functions
 aws lambda invoke --function-name simple_check_py simple_check_py.log && cat simple_check_py.log
+aws lambda invoke --function-name simple_check_py --payload '{"force_failure": true}' simple_check_py.log && cat simple_check_py.log
+
+# cli v2 (WIP)
 aws lambda invoke --function-name simple_check_py --log-type Tail --query 'LogResult' --output text |  base64 -d
 
 # logs

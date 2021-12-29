@@ -45,6 +45,22 @@ class LambdaHandler:
             self.return_code = 3
         return None
 
+    def get_force_failure(self, event):
+        """Used for testing purposes to send a payload and trigger a failure
+
+        Args:
+            event (dict): Incoming payload
+
+        Returns:
+            bool: if event payload was set
+        """
+        condition = event.get("force_failure")
+        if condition and isinstance(condition, bool):
+            self.return_code = 13
+            return True
+        else:
+            return False
+
     def get_ipv4(self):
         """Gets IPv4 source address
 
@@ -86,14 +102,18 @@ class LambdaHandler:
             # self.return_code = 6
         return None
 
-    def actions(self):
+    def actions(self, event):
         """Calls other functions and aggregates results
+
+        Args:
+            event (dict): Incoming payload
 
         Returns:
             dict: of desired output
         """
         all_results = {
             "attest_container": self.get_attest(),
+            "force_failure": self.get_force_failure(event),
             "ipv4": self.get_ipv4(),
             "ipv6": self.get_ipv6(),
             "region": os.environ.get("AWS_REGION", "us-fake-3"),
@@ -110,7 +130,7 @@ class LambdaHandler:
         """
         try:
             self.log_event_context(event, context)
-            response = self.actions()
+            response = self.actions(event)
         except Exception as e:
             logging.error(f"EXCEPTION: {str(e)}")
             self.return_code = 1
@@ -120,11 +140,14 @@ class LambdaHandler:
                 logging.info(f"CONTEXT: Lambda time remaining in MS: {context.get_remaining_time_in_millis()}")
             if self.return_code == 0:
                 logging.info(f"RETURN_CODE: {self.return_code}")
-                logging.info(f"RESPONSE: {response}")
+                logging.info(f"RESPONSE: {json.dumps(response)}")
             else:
                 logging.error(f"RETURN_CODE: {self.return_code}")
-                logging.error(f"RESPONSE: {response}")
-            print(response)
+                logging.error(f"RESPONSE: {json.dumps(response)}")
+            # print(json.dumps(response))
+            # NOTE: need double quotes from json.dumps
+            # NOTE: printing only response not necessary for JSON CloudWatch Filter Patterns
+            # NOTE: return does not have to use json.dumps
             return response
 
 
@@ -138,4 +161,5 @@ def lambda_handler(event, context):
 if __name__ == "__main__":
     """Entry point for local testing"""
     lh = LambdaHandler()
-    lh.main()
+    event = {"force_failure": False}
+    lh.main(event)

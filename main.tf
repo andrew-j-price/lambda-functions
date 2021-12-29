@@ -88,5 +88,5 @@ resource "aws_iam_role_policy_attachment" "lambda_policy" {
 resource "aws_cloudwatch_event_rule" "default_schedule" {
   name                = "default-schedule"
   description         = "Default schedule for auto-actioned functions"
-  schedule_expression = "rate(240 minutes)"
+  schedule_expression = "rate(30 minutes)"
 }
