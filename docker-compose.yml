@@ -12,3 +12,15 @@ services:
     working_dir: /git
     volumes:
       - ./:/git
+
+  deployer:
+    build:
+      context: ./docker/deployer
+      dockerfile: Dockerfile
+    image: deployer
+    command: sleep 365d
+    environment:
+      - SOMETHING=else
+    working_dir: /git
+    volumes:
+      - ./:/git

@@ -20,7 +20,7 @@ exec_py:
 	docker-compose exec pyfunctions bash
 
 
-# function - pass_fail_py
+# function:pass_fail_py
 function_pass_fail_py: run_pass_fail_py line_breaks1 test_pass_fail_py line_breaks2 black_check_pass_fail_py line_breaks3 flake8_pass_fail_py
 
 run_pass_fail_py:
@@ -40,6 +40,17 @@ black_check_pass_fail_py:
 flake8_pass_fail_py:
 	docker-compose exec -T pyfunctions flake8 --max-line-length 120 /git/pass_fail_py/lambda_function.py && \
 	docker-compose exec -T pyfunctions flake8 --max-line-length 120 /git/pass_fail_py/test_lambda_function.py
+
+
+# terraform
+terraform: terraform_init terraform_validate
+
+terraform_init:
+	docker-compose exec -T deployer terraform init
+
+terraform_validate:
+	docker-compose exec -T deployer terraform validate
+
 
 # helpers
 line_breaks1:

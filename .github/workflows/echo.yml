@@ -17,3 +17,9 @@ jobs:
       - name: List files in the repository with 🌲
         run: tree ${{ github.workspace }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
+
+  pending:
+    needs: echo
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Just evaluating the chaining of jobs"

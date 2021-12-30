@@ -1,0 +1,28 @@
+name: terraform:validate
+
+on:
+  workflow_run:
+    workflows: ["function:pass_fail_py"]
+    types:
+      - completed
+  push:
+    branches:
+    - main
+    - initial
+    - feature/**
+  pull_request:
+    branches:
+    - main
+
+jobs:
+  make:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - name: build
+      run: |
+        make build
+        docker-compose ps
+    - name: validate
+      run: make terraform
