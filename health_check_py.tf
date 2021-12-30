@@ -77,10 +77,10 @@ resource "aws_cloudwatch_metric_alarm" "health_check_py_failure" {
 
 // Return Code - Metric Log
 resource "aws_cloudwatch_log_metric_filter" "health_check_py_return_code" {
-  name           = "Filter - HealthCheckPy - ReturnCode"
+  name           = "LambdaHealthCheckPyReturnCode"
   pattern        = "{ $.return_code = \"*\" }"
   log_group_name = aws_cloudwatch_log_group.health_check_py.name
-
+  // NOTE: keep `name` the same for aws_cloudwatch_metric_alarm integration
   metric_transformation {
     name      = "LambdaHealthCheckPyReturnCode"
     namespace = "LogMetrics"
@@ -91,16 +91,19 @@ resource "aws_cloudwatch_log_metric_filter" "health_check_py_return_code" {
 
 // Return Code - SNS Integration
 resource "aws_cloudwatch_metric_alarm" "health_check_py_return_code_failure" {
-  namespace                 = "AWS/Lambda"
+  namespace                 = "LogMetrics"
   alarm_name                = "health_check_py_return_code_failure"
   metric_name               = aws_cloudwatch_log_metric_filter.health_check_py_return_code.name
   comparison_operator       = "GreaterThanOrEqualToThreshold"
   threshold                 = 1
   evaluation_periods        = 2
-  period                    = 10
+  datapoints_to_alarm       = 2
+  period                    = 1800  # seconds
   statistic                 = "Maximum"
+  unit                      = "None"
   alarm_actions             = [aws_sns_topic.notifications_topic.arn]
   insufficient_data_actions = []
+  treat_missing_data        = "ignore"
 }
 
 // Return Code - Dashboard
@@ -110,15 +113,15 @@ resource "aws_cloudwatch_dashboard" "main" {
 {
     "widgets": [
         {
-            "type": "metric",
-            "x": 0,
-            "y": 0,
-            "width": 24,
             "height": 6,
+            "width": 24,
+            "y": 0,
+            "x": 0,
+            "type": "metric",
             "properties": {
                 "metrics": [
-                    [ { "expression": "FILL(METRICS(), LINEAR)", "label": "Trend", "id": "e1", "region": "us-east-2" } ],
-                    [ "LogMetrics", "LambdaHealthCheckPyReturnCode", { "id": "m1" } ]
+                    [ { "expression": "FILL(METRICS(), LINEAR)", "label": "Trend of", "id": "e1", "region": "us-east-2" } ],
+                    [ "LogMetrics", "LambdaHealthCheckPyReturnCode", { "id": "m1", "label": "Return Code" } ]
                 ],
                 "view": "timeSeries",
                 "stacked": false,

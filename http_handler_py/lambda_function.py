@@ -12,11 +12,14 @@ def log_event_context(event, context):
         logging.info(f"EVENT: event is of type: {type(event)} and data: {event}")
     if context:
         logging.info(f"CONTEXT: context is of type: {type(context)} and data: {context}")
+        logging.info(f"CONTEXT: Client context: {context.client_context}")
         logging.info(f"CONTEXT: CloudWatch log group name: {context.log_group_name}")
         logging.info(f"CONTEXT: CloudWatch log stream name: {context.log_stream_name}")
-        logging.info(f"CONTEXT: Lambda function ARN: {context.invoked_function_arn}")
-        logging.info(f"CONTEXT: Lambda Request ID: {context.aws_request_id}")
-        logging.info(f"CONTEXT: Lambda function memory limits in MB: {context.memory_limit_in_mb}")
+        logging.info(f"CONTEXT: Function ARN: {context.invoked_function_arn}")
+        logging.info(f"CONTEXT: Function memory limits in MB: {context.memory_limit_in_mb}")
+        logging.info(f"CONTEXT: Function name: {context.function_name}")
+        logging.info(f"CONTEXT: Function version: {context.function_version}")
+        logging.info(f"CONTEXT: Request ID: {context.aws_request_id}")
 
 
 def actions():
