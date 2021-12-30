@@ -107,7 +107,7 @@ resource "aws_cloudwatch_metric_alarm" "health_check_py_return_code_failure" {
 }
 
 // Return Code - Dashboard
-resource "aws_cloudwatch_dashboard" "main" {
+resource "aws_cloudwatch_dashboard" "health_check_py" {
   dashboard_name = "HealthCheckMonitoring"
   dashboard_body = <<EOF
 {

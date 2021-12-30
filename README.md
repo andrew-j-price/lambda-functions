@@ -60,6 +60,20 @@ aws lambda invoke --function-name http_handler_py http_handler_py.log && cat htt
 aws lambda invoke --function-name http_handler_py --log-type Tail --query 'LogResult' --output text |  base64 -d
 ```
 
+
+### pass_fail_py
+```
+# local
+python pass_fail_py/lambda_function.py
+
+# remote - success
+aws lambda invoke --function-name pass_fail_py pass_fail_py.log && cat pass_fail_py.log
+
+# remote - failure
+aws lambda invoke --function-name pass_fail_py --payload '{"force_failure": true}' pass_fail_py.log && cat pass_fail_py.log
+
+```
+
 ## CloudWatch
 Log group
 * formatted [/aws/lambda/<<<function_name>>](https://us-east-2.console.aws.amazon.com/cloudwatch/home?region=us-east-2#logsV2:log-groups) created by default with "Never expire" Retention policy
