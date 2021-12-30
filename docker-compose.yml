@@ -1,0 +1,14 @@
+version: "3.2"
+
+services:
+  pyfunctions:
+    build:
+      context: ./docker/pyfunctions
+      dockerfile: Dockerfile
+    image: pyfunctions
+    command: sleep 365d
+    environment:
+      - SOMETHING=else
+    working_dir: /git
+    volumes:
+      - ./:/git
