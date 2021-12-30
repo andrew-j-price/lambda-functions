@@ -8,6 +8,7 @@ services:
     image: pyfunctions
     command: sleep 365d
     environment:
+      - PYTHONDONTWRITEBYTECODE=1
       - SOMETHING=else
     working_dir: /git
     volumes:
