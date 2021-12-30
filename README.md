@@ -1,16 +1,19 @@
 # lambda-functions
 
-## sample usage
+## module usage
 ```golang
 module "lambda_functions" {
-  source      = "github.com/andrew-j-price/lambda-functions"
-  common_tags = merge(local.common_tags, var.global_tags)
-  subnet_ids  = [data.terraform_remote_state.core.outputs.private_subnets[0], data.terraform_remote_state.core.outputs.private_subnets[1]]
-  vpc_id      = data.terraform_remote_state.core.outputs.vpc_id
+  source          = "github.com/andrew-j-price/lambda-functions"
+  common_tags     = merge(local.common_tags, var.global_tags)
+  sns_emails      = ["andrew@example.com"]
+  sns_webhook_url = "https://api.example.com/sns"
+  subnet_ids      = [data.terraform_remote_state.core.outputs.private_subnets[0], data.terraform_remote_state.core.outputs.private_subnets[1]]
+  vpc_id          = data.terraform_remote_state.core.outputs.vpc_id
 }
 ```
 
-## python function
+## python functions
+refer to `Makefile` for complete testing
 
 ### health_check_py
 ```bash
@@ -18,7 +21,7 @@ module "lambda_functions" {
 cd <dir>
 python -m pip install --target . requests
 
-# testing (either command)
+# run locally (either command)
 python health_check_py/lambda_function.py
 docker run -it --rm  -v $(pwd):/git python:3.8-bullseye python /git/health_check_py/lambda_function.py
 
@@ -40,27 +43,6 @@ aws logs get-log-events --log-group-name $LOG_GROUP --log-stream-name `aws logs 
 
 ```
 
-### http_handler_py
-```bash
-# install packages
-cd <dir>
-# python -m pip install --target . requests
-
-# testing (either command)
-python http_handler_py/lambda_function.py
-docker run -it --rm  -v $(pwd):/git python:3.8-bullseye python /git/http_handler_py/lambda_function.py
-
-# styling
-black --line-length 120 http_handler_py/lambda_function.py 
-flake8 --max-line-length 120 http_handler_py/lambda_function.py 
-
-# cli
-aws lambda list-functions
-aws lambda invoke --function-name http_handler_py http_handler_py.log && cat http_handler_py.log
-aws lambda invoke --function-name http_handler_py --log-type Tail --query 'LogResult' --output text |  base64 -d
-```
-
-
 ### pass_fail_py
 ```
 # local
@@ -73,11 +55,6 @@ aws lambda invoke --function-name pass_fail_py pass_fail_py.log && cat pass_fail
 aws lambda invoke --function-name pass_fail_py --payload '{"force_failure": true}' pass_fail_py.log && cat pass_fail_py.log
 
 ```
-
-## CloudWatch
-Log group
-* formatted [/aws/lambda/<<<function_name>>](https://us-east-2.console.aws.amazon.com/cloudwatch/home?region=us-east-2#logsV2:log-groups) created by default with "Never expire" Retention policy
-* logs append to unique id based upon deployment
 
 ## Terraform Module removal
 When removing usage of resources in this module, those resources have to be cleaned up first.
