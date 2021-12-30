@@ -17,7 +17,9 @@ jobs:
     - name: checkout
       uses: actions/checkout@v2
     - name: build
-      run: make build
+      run: |
+        make build
+        docker-compose ps
     - name: run
       run: make run_pass_fail_py
     - name: pytest
