@@ -2,17 +2,10 @@ name: terraform:validate
 
 on:
   workflow_run:
-    workflows: ["function:pass_fail_py"]
+    workflows: 
+      - "function:pass_fail_py"
     types:
       - completed
-  push:
-    branches:
-    - main
-    - initial
-    - feature/**
-  pull_request:
-    branches:
-    - main
 
 jobs:
   make:
