@@ -1,4 +1,4 @@
-name: function:pass_fail_py
+name: ci_testing
 
 on:
   push:
@@ -11,14 +11,14 @@ on:
     - main
 
 jobs:
-  make:
+  function_pass_fail_py:
     runs-on: ubuntu-latest
     steps:
     - name: checkout
       uses: actions/checkout@v2
     - name: build
       run: |
-        make build
+        make ci_build_pyfunctions
         docker-compose ps
     - name: run
       run: make run_pass_fail_py
@@ -28,3 +28,15 @@ jobs:
       run: make black_check_pass_fail_py
     - name: flake8
       run: make flake8_pass_fail_py
+
+  terraform_validate:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - name: build
+      run: |
+        make ci_build_deployer
+        docker-compose ps
+    - name: validate
+      run: make terraform

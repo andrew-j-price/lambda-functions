@@ -10,6 +10,14 @@ build:
 down:
 	docker-compose down --remove-orphans
 
+ci_build_pyfunctions:
+	docker-compose build pyfunctions && \
+	docker-compose up -d pyfunctions
+
+ci_build_deployer:
+	docker-compose build deployer && \
+	docker-compose up -d deployer
+
 rebuild_py:
 	docker build --tag="pyfunctions" ./docker/pyfunctions/ && \
 	docker-compose stop pyfunctions && \

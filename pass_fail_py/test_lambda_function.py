@@ -1,5 +1,7 @@
+import os
 import pytest
 import sys
+from unittest.mock import patch
 from lambda_function import actions, lambda_handler
 
 
@@ -7,6 +9,7 @@ def test_actions_success():
     event = {"something": "random"}
     response = actions(event)
     assert isinstance(response, dict)
+    assert response.get("region") == "us-fake-3"
     assert "region" in response
     assert "uuid" in response
 
@@ -18,10 +21,12 @@ def test_actions_failure():
         assert isinstance(response, None)
 
 
+@patch.dict(os.environ, {"AWS_REGION": "eu-fake-3"})
 def test_handler_success():
     event = {"something": "random"}
     response = lambda_handler(event)
     assert isinstance(response, dict)
+    assert response.get("region") == "eu-fake-3"
     assert "region" in response
     assert "uuid" in response
 

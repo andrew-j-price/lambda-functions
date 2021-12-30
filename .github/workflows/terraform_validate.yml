@@ -5,7 +5,7 @@ name: terraform:validate
 on:
   workflow_run:
     workflows: 
-      - "function:pass_fail_py"
+      - "ci_testing"
     types:
       - completed
 
@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v2
       - name: build
         run: |
-          make build
+          make ci_build_deployer
           docker-compose ps
       - name: validate
         run: make terraform
