@@ -31,18 +31,23 @@ resource "aws_cloudwatch_log_group" "http_handler_py" {
   name              = "/aws/lambda/http_handler_py"
   retention_in_days = 3
 }
-
-// NOTE: not necessary for all functions
-resource "aws_cloudwatch_event_target" "http_handler_py" {
-  rule = aws_cloudwatch_event_rule.default_schedule.name
-  arn  = aws_lambda_function.http_handler_py.arn
+resource "aws_apigatewayv2_integration" "http_handler_py" {
+  api_id = aws_apigatewayv2_api.lambda.id
+  integration_uri    = aws_lambda_function.http_handler_py.invoke_arn
+  integration_type   = "AWS_PROXY"
+  integration_method = "POST"
 }
 
-// NOTE: not necessary for all functions
+resource "aws_apigatewayv2_route" "http_handler_py" {
+  api_id = aws_apigatewayv2_api.lambda.id
+  route_key = "GET /hello"
+  target    = "integrations/${aws_apigatewayv2_integration.http_handler_py.id}"
+}
+
 resource "aws_lambda_permission" "http_handler_py" {
-  statement_id  = "AllowExecutionFromCloudWatch"
+  statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.http_handler_py.function_name
-  principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.default_schedule.arn
+  principal     = "apigateway.amazonaws.com"
+  source_arn = "${aws_apigatewayv2_api.lambda.execution_arn}/*/*"
 }
