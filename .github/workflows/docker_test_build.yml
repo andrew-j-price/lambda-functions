@@ -1,0 +1,28 @@
+name: function:pass_fail_py
+
+on:
+  push:
+    branches:
+    - main
+    - initial
+    - feature/**
+  pull_request:
+    branches:
+    - main
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - name: build
+      run: make build
+    - name: run
+      run: make run_pass_fail_py
+    - name: pytest
+      run: make test_pass_fail_py
+    - name: black
+      run: make black_check_pass_fail_py
+    - name: flake8
+      run: make flake8_pass_fail_py
