@@ -11,6 +11,24 @@ on:
     - main
 
 jobs:
+  function_health_check_py:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - name: build
+      run: |
+        make ci_build_pyfunctions
+        docker-compose ps
+    - name: run
+      run: make run_health_check_py
+    - name: pytest
+      run: make test_health_check_py
+    - name: black
+      run: make black_check_health_check_py
+    - name: flake8
+      run: make flake8_health_check_py
+
   function_pass_fail_py:
     runs-on: ubuntu-latest
     steps:
