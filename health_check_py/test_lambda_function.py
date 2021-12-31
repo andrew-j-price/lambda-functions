@@ -48,7 +48,7 @@ class TestLambdaHandlerClass(unittest.TestCase):
     def test_actions(self, mock_attest, mock_force, mock_ipv4, mock_ipv6):
         mock_attest.return_value = "abc123"
         mock_force.return_value = False
-        mock_ipv4.return_value = None
+        mock_ipv4.return_value = "1.2.3.4"
         mock_ipv6.return_value = None
         event = {"unit": "test"}
         response = LambdaHandler().actions(event)
@@ -58,7 +58,7 @@ class TestLambdaHandlerClass(unittest.TestCase):
         assert response == {
             "attest_container": "abc123",
             "force_failure": False,
-            "ipv4": None,
+            "ipv4": "1.2.3.4",
             "ipv6": None,
             "region": "unit-test-1",
             "return_code": 0,
@@ -69,7 +69,7 @@ class TestLambdaHandlerClass(unittest.TestCase):
         mock_actions.return_value = {
             "attest_container": "abc123",
             "force_failure": False,
-            "ipv4": None,
+            "ipv4": "1.2.3.4",
             "ipv6": None,
             "region": "unit-test-1",
             "return_code": 0,
@@ -81,7 +81,7 @@ class TestLambdaHandlerClass(unittest.TestCase):
         assert response == {
             "attest_container": "abc123",
             "force_failure": False,
-            "ipv4": None,
+            "ipv4": "1.2.3.4",
             "ipv6": None,
             "region": "unit-test-1",
             "return_code": 0,

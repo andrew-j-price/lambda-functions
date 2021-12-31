@@ -98,7 +98,7 @@ resource "aws_cloudwatch_metric_alarm" "health_check_py_return_code_failure" {
   threshold                 = 1
   evaluation_periods        = 2
   datapoints_to_alarm       = 2
-  period                    = 1800  # seconds
+  period                    = 1800 # seconds
   statistic                 = "Maximum"
   unit                      = "None"
   alarm_actions             = [aws_sns_topic.notifications_topic.arn]
