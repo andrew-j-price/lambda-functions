@@ -2,6 +2,7 @@ name: terraform:validate
 
 # NOTE: workflow_run works only on default branch
 # https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows#workflow_run
+# ALTERNATIVE: to evaluate: https://github.com/marketplace/actions/wait-on-check
 on:
   workflow_run:
     workflows: 

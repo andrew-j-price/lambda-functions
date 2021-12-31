@@ -4,6 +4,15 @@ import unittest
 from unittest.mock import MagicMock, patch
 from lambda_function import lambda_handler, LambdaHandler
 
+sample_response = {
+    "attest_container": "abc123",
+    "force_failure": False,
+    "ipv4": "1.2.3.4",
+    "ipv6": None,
+    "region": "unit-test-1",
+    "return_code": 0,
+}
+
 
 @patch.dict(os.environ, {"AWS_REGION": "unit-test-1"})
 class TestLambdaHandlerClass(unittest.TestCase):
@@ -55,42 +64,21 @@ class TestLambdaHandlerClass(unittest.TestCase):
         assert isinstance(response, dict)
         assert response.get("region") == "unit-test-1"
         assert response.get("return_code") == 0
-        assert response == {
-            "attest_container": "abc123",
-            "force_failure": False,
-            "ipv4": "1.2.3.4",
-            "ipv6": None,
-            "region": "unit-test-1",
-            "return_code": 0,
-        }
+        assert response == sample_response
 
     @patch("lambda_function.LambdaHandler.actions")
     def test_main(self, mock_actions):
-        mock_actions.return_value = {
-            "attest_container": "abc123",
-            "force_failure": False,
-            "ipv4": "1.2.3.4",
-            "ipv6": None,
-            "region": "unit-test-1",
-            "return_code": 0,
-        }
+        mock_actions.return_value = sample_response
         response = LambdaHandler().main()
         assert isinstance(response, dict)
         assert response.get("region") == "unit-test-1"
         assert response.get("return_code") == 0
-        assert response == {
-            "attest_container": "abc123",
-            "force_failure": False,
-            "ipv4": "1.2.3.4",
-            "ipv6": None,
-            "region": "unit-test-1",
-            "return_code": 0,
-        }
+        assert response == sample_response
 
     @patch("lambda_function.LambdaHandler")
     def test_lambda_handler_entry(self, mock_class):
         lambda_handler(event=None, context=None)
-        assert mock_class.called_once_with()
+        mock_class.assert_called_with()
 
     def test_python_version(self):
         assert sys.version_info[0] == 3
