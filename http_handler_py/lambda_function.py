@@ -10,6 +10,10 @@ def log_event_context(event, context):
     """Logs information on invoked Lambda function"""
     if event:
         logging.info(f"EVENT: event is of type: {type(event)} and data: {event}")
+        logging.info(f"EVENT queryStringParameters: {event['queryStringParameters']}")
+        if event.get("requestContext"):
+            logging.info(f"EVENT userAgent: {event['requestContext']['identity']['userAgent']}")
+            logging.info(f"EVENT sourceIP: {event['requestContext']['identity']['sourceIp']}")
     if context:
         logging.info(f"CONTEXT: context is of type: {type(context)} and data: {context}")
         logging.info(f"CONTEXT: Client context: {context.client_context}")
@@ -22,9 +26,24 @@ def log_event_context(event, context):
         logging.info(f"CONTEXT: Request ID: {context.aws_request_id}")
 
 
-def actions():
-    """Perform the actual work here"""
+def actions(event):
+    """Perform the actual work here
+
+    Args:
+        event (dict): Incoming payload
+
+    Returns:
+       dict: of actions
+    """
+    try:
+        query_name = event["queryStringParameters"]["name"]
+    except KeyError:
+        query_name = "lucas"
+    except Exception as e:
+        logging.debug(f"Exception: {e}")
+        query_name = "caroline"
     message_dict = {
+        "name": query_name,
         "region": os.environ.get("AWS_REGION", "us-fake-3"),
         "uuid": str(uuid4()),
     }
@@ -64,7 +83,7 @@ def main(event=None, context=None):
     """
     try:
         log_event_context(event, context)
-        message_dict = actions()
+        message_dict = actions(event)
         response = response_generator(200, message_dict)
     except Exception as e:
         logging.error(f"EXCEPTION: {str(e)}")
@@ -88,4 +107,7 @@ def lambda_handler(event, context):
 
 if __name__ == "__main__":
     """Entry point for local testing"""
-    main()
+    event = {"queryStringParameters": {"name": "drew"}}
+    # event = {'queryStringParameters': {'something': 'else'}}
+    # event = None
+    main(event)
