@@ -47,6 +47,24 @@ jobs:
     - name: flake8
       run: make flake8_http_handler_py
 
+  function_instruct_go:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - name: build
+      run: |
+        make ci_build_gofunctions
+        docker-compose ps
+    - name: test
+      run: make instruct_go_docker_test
+    - name: build
+      run: make instruct_go_docker_build
+    - name: run docker
+      run: make instruct_go_docker_run_directory
+    - name: run local
+      run: make instruct_go_local_run_artifact
+
   function_pass_fail_py:
     runs-on: ubuntu-latest
     steps:

@@ -10,6 +10,10 @@ build:
 down:
 	docker-compose down --remove-orphans
 
+ci_build_gofunctions:
+	docker-compose build gofunctions && \
+	docker-compose up -d gofunctions
+
 ci_build_pyfunctions:
 	docker-compose build pyfunctions && \
 	docker-compose up -d pyfunctions
@@ -34,22 +38,32 @@ exec_py:
 	docker-compose exec pyfunctions bash
 
 
-# function:http_handler_go
-function_command_go: command_go_run_directory
+# function:instruct_go
+function_instruct_go: instruct_go_docker_test line_breaks1 instruct_go_docker_build line_breaks2 instruct_go_docker_run_directory
 
-command_go_run_directory:
-	docker-compose exec -T gofunctions bash -c "cd command_go && go run . --debug"
+instruct_go_docker_run_directory:
+	docker-compose exec -T gofunctions bash -c "cd instruct_go && go run . --debug"
 
-command_go_build:
-	docker-compose exec -T gofunctions bash -c "cd command_go && CGO_ENABLED=0 go build -o handler"
+instruct_go_docker_build:
+	docker-compose exec -T gofunctions bash -c "cd instruct_go && CGO_ENABLED=0 go build -o handler"
 
-command_go_run_artifact_docker:
-	docker-compose exec -T gofunctions bash -c "cd command_go && ./handler"
+instruct_go_docker_run_artifact:
+	docker-compose exec -T gofunctions bash -c "cd instruct_go && ./handler"
 
-command_go_run_artifact_locally:
-	./command_go/handler
+instruct_go_docker_test:
+	docker-compose exec -T gofunctions bash -c "cd instruct_go && go test -v -cover"
 
+instruct_go_local_run_directory:
+	cd instruct_go && go run . --debug
 
+instruct_go_local_build_artifact:
+	cd instruct_go && CGO_ENABLED=0 go build -o handler
+
+instruct_go_local_run_artifact:
+	./instruct_go/handler
+
+instruct_go_local_test:
+	cd instruct_go && go test -v -cover
 
 # function:health_check_py
 function_health_check_py: run_health_check_py line_breaks1 test_health_check_py line_breaks2 black_check_health_check_py line_breaks3 flake8_health_check_py
