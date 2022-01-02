@@ -1,6 +1,19 @@
 version: "3.2"
 
 services:
+  gofunctions:
+    build:
+      context: ./docker/gofunctions
+      dockerfile: Dockerfile
+    image: gofunctions
+    command: sleep 365d
+    environment:
+      - LOCAL_TESTING=true
+      - SOMETHING=else
+    working_dir: /git
+    volumes:
+      - ./:/git
+
   pyfunctions:
     build:
       context: ./docker/pyfunctions

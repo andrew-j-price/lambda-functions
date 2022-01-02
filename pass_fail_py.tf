@@ -97,7 +97,3 @@ resource "aws_cloudwatch_dashboard" "pass_fail_py" {
 }
 EOF
 }
-
-
-
-

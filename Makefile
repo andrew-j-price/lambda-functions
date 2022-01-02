@@ -27,8 +27,28 @@ rebuild_py:
 exec_deployer:
 	docker-compose exec deployer bash
 
+exec_go:
+	docker-compose exec gofunctions sh
+
 exec_py:
 	docker-compose exec pyfunctions bash
+
+
+# function:http_handler_go
+function_command_go: command_go_run_directory
+
+command_go_run_directory:
+	docker-compose exec -T gofunctions bash -c "cd command_go && go run . --debug"
+
+command_go_build:
+	docker-compose exec -T gofunctions bash -c "cd command_go && CGO_ENABLED=0 go build -o handler"
+
+command_go_run_artifact_docker:
+	docker-compose exec -T gofunctions bash -c "cd command_go && ./handler"
+
+command_go_run_artifact_locally:
+	./command_go/handler
+
 
 
 # function:health_check_py

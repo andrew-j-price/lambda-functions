@@ -1,4 +1,13 @@
 # lambda-functions
+This is an educational repo based primarily around AWS Lambda
+* Functions written in Golang and Python
+  * With different styles on error-handling and response messages depending upon integrations
+* Custom CloudWatch Logs, Metrics, and Dashboards for service insights
+* SNS notification integrations
+* API Gateway integration for web publishing
+* Packaged as a Terraform module
+  * Deployments are integrated with my private IaaS repo
+* Testing via GitHub Actions
 
 ## module usage
 ```golang
