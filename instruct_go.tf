@@ -12,11 +12,6 @@ resource "aws_lambda_function" "instruct_go" {
   runtime          = "go1.x"
   timeout          = 60
   source_code_hash = filebase64sha256(data.archive_file.instruct_go.output_path)
-  environment {
-    variables = {
-      LOCAL_TESTING = "true"
-    }
-  }
   tags = merge(var.common_tags, {
     func = "instruct_go"
   })

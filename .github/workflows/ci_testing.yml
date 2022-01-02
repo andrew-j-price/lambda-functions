@@ -10,6 +10,9 @@ on:
     branches:
     - main
 
+env:
+  SOMETHING: else
+
 jobs:
   function_health_check_py:
     runs-on: ubuntu-latest
@@ -63,6 +66,8 @@ jobs:
     - name: run docker
       run: make instruct_go_docker_run_directory
     - name: run local
+      env:
+        LOCAL_TESTING: true
       run: make instruct_go_local_run_artifact
 
   function_pass_fail_py:
