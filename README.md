@@ -1,6 +1,6 @@
 # lambda-functions
 This is an educational repo based primarily around AWS Lambda
-* Functions written in Golang and Python
+* Serverless functions written in Golang and Python
   * With different styles on error-handling and response messages depending upon integrations
 * Custom CloudWatch Logs, Metrics, and Dashboards for service insights
 * SNS notification integrations
@@ -21,8 +21,8 @@ module "lambda_functions" {
 }
 ```
 
-## python functions
-refer to `Makefile` for complete testing
+## functions
+refer to `Makefile` for complete workflows
 
 ### health_check_py
 ```bash
@@ -31,6 +31,7 @@ cd <dir>
 python -m pip install --target . requests
 
 # run locally (either command)
+make run_health_check_py
 python health_check_py/lambda_function.py
 docker run -it --rm  -v $(pwd):/git python:3.8-bullseye python /git/health_check_py/lambda_function.py
 

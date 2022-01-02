@@ -65,6 +65,7 @@ instruct_go_local_run_artifact:
 instruct_go_local_test:
 	cd instruct_go && go test -v -cover
 
+
 # function:health_check_py
 function_health_check_py: run_health_check_py line_breaks1 test_health_check_py line_breaks2 black_check_health_check_py line_breaks3 flake8_health_check_py
 
@@ -85,6 +86,16 @@ black_check_health_check_py:
 flake8_health_check_py:
 	docker-compose exec -T pyfunctions flake8 --max-line-length 120 /git/health_check_py/lambda_function.py && \
 	docker-compose exec -T pyfunctions flake8 --max-line-length 120 /git/health_check_py/test_lambda_function.py
+
+
+# function:http_handler_go
+function_instruct_go: http_handler_go_docker_build
+
+http_handler_go_docker_run_directory:
+	docker-compose exec -T gofunctions bash -c "cd http_handler_go && go run . --debug"
+
+http_handler_go_docker_build:
+	docker-compose exec -T gofunctions bash -c "cd http_handler_go && CGO_ENABLED=0 go build -o handler"
 
 
 # function:http_handler_py
