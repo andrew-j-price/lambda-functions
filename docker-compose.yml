@@ -21,6 +21,7 @@ services:
     image: pyfunctions
     command: sleep 365d
     environment:
+      - ATTEST_BASE_URL=https://attest.linecas.com
       - PYTHONDONTWRITEBYTECODE=1
       - SOMETHING=else
     working_dir: /git

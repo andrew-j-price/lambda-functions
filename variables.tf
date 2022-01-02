@@ -1,3 +1,8 @@
+variable "attest_base_url" {
+  type    = string
+  default = "http://attest.example.com"
+}
+
 variable "aws_region" {
   default = "us-east-2"
 }

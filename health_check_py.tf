@@ -12,6 +12,11 @@ resource "aws_lambda_function" "health_check_py" {
   runtime          = "python3.8"
   timeout          = 60
   source_code_hash = filebase64sha256(data.archive_file.health_check_py.output_path)
+  environment {
+    variables = {
+      ATTEST_BASE_URL = var.attest_base_url
+    }
+  }
   /* NOTES:
      vpc_config is optional, internet bound traffic does not have to be in VPC, but VPC bound traffic must be in private subnet
      For IPv4 outbound traffic, VPC needs NAT Gateway or NAT Instance

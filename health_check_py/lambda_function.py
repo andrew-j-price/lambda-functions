@@ -34,8 +34,8 @@ class LambdaHandler:
             string: of container name, otherwise None
         """
         try:
-            # TODO: get URL from environment variable
-            response = requests.get("https://attest.linecas.com/default", verify=True, timeout=3.0)
+            attest_base_url = os.environ.get("ATTEST_BASE_URL", "http://127.0.0.1:5005")
+            response = requests.get(f"{attest_base_url}/default", verify=True, timeout=3.0)
             logging.info(f"STATUS_CODE: {response.status_code}")
             if response.status_code == 200 and "host_name" in response.text:
                 data = json.loads(response.text)
