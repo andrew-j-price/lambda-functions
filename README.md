@@ -31,7 +31,7 @@ cd <dir>
 python -m pip install --target . requests
 
 # run locally (either command)
-make run_health_check_py
+make health_check_py_run
 python health_check_py/lambda_function.py
 docker run -it --rm  -v $(pwd):/git python:3.8-bullseye python /git/health_check_py/lambda_function.py
 

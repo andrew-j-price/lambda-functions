@@ -24,13 +24,13 @@ jobs:
         make ci_build_pyfunctions
         docker-compose ps
     - name: run
-      run: make run_health_check_py
+      run: make health_check_py_run
     - name: pytest
-      run: make test_health_check_py
+      run: make health_check_py_test
     - name: black
-      run: make black_check_health_check_py
+      run: make health_check_py_black_check
     - name: flake8
-      run: make flake8_health_check_py
+      run: make health_check_py_flake8
 
   function_http_handler_go:
     runs-on: ubuntu-latest
@@ -56,13 +56,13 @@ jobs:
         make ci_build_pyfunctions
         docker-compose ps
     - name: run
-      run: make run_http_handler_py
+      run: make http_handler_py_run
     - name: pytest
-      run: make test_http_handler_py
+      run: make http_handler_py_test
     - name: black
-      run: make black_check_http_handler_py
+      run: make http_handler_py_black_check
     - name: flake8
-      run: make flake8_http_handler_py
+      run: make http_handler_py_flake8
 
   function_instruct_go:
     runs-on: ubuntu-latest
@@ -94,13 +94,13 @@ jobs:
         make ci_build_pyfunctions
         docker-compose ps
     - name: run
-      run: make run_pass_fail_py
+      run: make pass_fail_py_run
     - name: pytest
-      run: make test_pass_fail_py
+      run: make pass_fail_py_test
     - name: black
-      run: make black_check_pass_fail_py
+      run: make pass_fail_py_black_check
     - name: flake8
-      run: make flake8_pass_fail_py
+      run: make pass_fail_py_flake8
 
   terraform_validate:
     runs-on: ubuntu-latest

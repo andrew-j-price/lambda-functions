@@ -67,29 +67,29 @@ instruct_go_local_test:
 
 
 # function:health_check_py
-function_health_check_py: run_health_check_py line_breaks1 test_health_check_py line_breaks2 black_check_health_check_py line_breaks3 flake8_health_check_py
+function_health_check_py: health_check_py_run line_breaks1 health_check_py_test line_breaks2 health_check_py_black_check line_breaks3 health_check_py_flake8
 
-run_health_check_py:
+health_check_py_run:
 	docker-compose exec -T pyfunctions python /git/health_check_py/lambda_function.py
 
-test_health_check_py:
+health_check_py_test:
 	docker-compose exec -T pyfunctions pytest --verbose /git/health_check_py/test_lambda_function.py
 
-black_apply_health_check_py:
+health_check_py_black_apply:
 	docker-compose exec -T pyfunctions black --line-length 120 /git/health_check_py/lambda_function.py && \
 	docker-compose exec -T pyfunctions black --line-length 120 /git/health_check_py/test_lambda_function.py
 
-black_check_health_check_py:
+health_check_py_black_check:
 	docker-compose exec -T pyfunctions black --check --line-length 120 /git/health_check_py/lambda_function.py && \
 	docker-compose exec -T pyfunctions black --check --line-length 120 /git/health_check_py/test_lambda_function.py
 
-flake8_health_check_py:
+health_check_py_flake8:
 	docker-compose exec -T pyfunctions flake8 --max-line-length 120 /git/health_check_py/lambda_function.py && \
 	docker-compose exec -T pyfunctions flake8 --max-line-length 120 /git/health_check_py/test_lambda_function.py
 
 
 # function:http_handler_go
-function_instruct_go: http_handler_go_docker_build
+function_http_handler_go: http_handler_go_docker_build line_breaks1 http_handler_go_docker_run_directory
 
 http_handler_go_docker_run_directory:
 	docker-compose exec -T gofunctions bash -c "cd http_handler_go && go run . --debug"
@@ -102,23 +102,23 @@ http_handler_go_api:
 
 
 # function:http_handler_py
-function_http_handler_py: run_http_handler_py line_breaks1 test_http_handler_py line_breaks2 black_check_http_handler_py line_breaks3 flake8_http_handler_py
+function_http_handler_py: http_handler_py_run line_breaks1 http_handler_py_test line_breaks2 http_handler_py_black_check line_breaks3 http_handler_py_flake8
 
-run_http_handler_py:
+http_handler_py_run:
 	docker-compose exec -T pyfunctions python /git/http_handler_py/lambda_function.py
 
-test_http_handler_py:
+http_handler_py_test:
 	docker-compose exec -T pyfunctions pytest --verbose /git/http_handler_py/test_lambda_function.py
 
-black_apply_http_handler_py:
+http_handler_py_black_apply:
 	docker-compose exec -T pyfunctions black --line-length 120 /git/http_handler_py/lambda_function.py && \
 	docker-compose exec -T pyfunctions black --line-length 120 /git/http_handler_py/test_lambda_function.py
 
-black_check_http_handler_py:
+http_handler_py_black_check:
 	docker-compose exec -T pyfunctions black --check --line-length 120 /git/http_handler_py/lambda_function.py && \
 	docker-compose exec -T pyfunctions black --check --line-length 120 /git/http_handler_py/test_lambda_function.py
 
-flake8_http_handler_py:
+http_handler_py_flake8:
 	docker-compose exec -T pyfunctions flake8 --max-line-length 120 /git/http_handler_py/lambda_function.py && \
 	docker-compose exec -T pyfunctions flake8 --max-line-length 120 /git/http_handler_py/test_lambda_function.py
 
@@ -127,23 +127,23 @@ http_handler_py_api:
 
 
 # function:pass_fail_py
-function_pass_fail_py: run_pass_fail_py line_breaks1 test_pass_fail_py line_breaks2 black_check_pass_fail_py line_breaks3 flake8_pass_fail_py
+function_pass_fail_py: pass_fail_py_run line_breaks1 pass_fail_py_test line_breaks2 pass_fail_py_black_check line_breaks3 pass_fail_py_flake8
 
-run_pass_fail_py:
+pass_fail_py_run:
 	docker-compose exec -T pyfunctions python /git/pass_fail_py/lambda_function.py
 
-test_pass_fail_py:
+pass_fail_py_test:
 	docker-compose exec -T pyfunctions pytest --verbose /git/pass_fail_py/test_lambda_function.py
 
-black_apply_pass_fail_py:
+pass_fail_py_black_apply:
 	docker-compose exec -T pyfunctions black --line-length 120 /git/pass_fail_py/lambda_function.py && \
 	docker-compose exec -T pyfunctions black --line-length 120 /git/pass_fail_py/test_lambda_function.py
 
-black_check_pass_fail_py:
+pass_fail_py_black_check:
 	docker-compose exec -T pyfunctions black --check --line-length 120 /git/pass_fail_py/lambda_function.py && \
 	docker-compose exec -T pyfunctions black --check --line-length 120 /git/pass_fail_py/test_lambda_function.py
 
-flake8_pass_fail_py:
+pass_fail_py_flake8:
 	docker-compose exec -T pyfunctions flake8 --max-line-length 120 /git/pass_fail_py/lambda_function.py && \
 	docker-compose exec -T pyfunctions flake8 --max-line-length 120 /git/pass_fail_py/test_lambda_function.py
 
