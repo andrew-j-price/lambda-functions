@@ -43,6 +43,8 @@ jobs:
         docker-compose ps
     - name: build
       run: make http_handler_go_docker_build
+    - name: run
+      run: make http_handler_go_docker_run_directory
 
   function_http_handler_py:
     runs-on: ubuntu-latest
