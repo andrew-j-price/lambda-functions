@@ -1,0 +1,115 @@
+name: ci_testing
+
+on:
+  push:
+    branches:
+    - main
+    - initial
+    - feature/**
+  pull_request:
+    branches:
+    - main
+
+env:
+  SOMETHING: else
+
+jobs:
+  function_health_check_py:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - name: build
+      run: |
+        make ci_build_pyfunctions
+        docker-compose ps
+    - name: run
+      run: make health_check_py_run
+    - name: pytest
+      run: make health_check_py_test
+    - name: black
+      run: make health_check_py_black_check
+    - name: flake8
+      run: make health_check_py_flake8
+
+  function_http_handler_go:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - name: build
+      run: |
+        make ci_build_gofunctions
+        docker-compose ps
+    - name: build
+      run: make http_handler_go_docker_build
+    - name: run
+      run: make http_handler_go_docker_run_directory
+
+  function_http_handler_py:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - name: build
+      run: |
+        make ci_build_pyfunctions
+        docker-compose ps
+    - name: run
+      run: make http_handler_py_run
+    - name: pytest
+      run: make http_handler_py_test
+    - name: black
+      run: make http_handler_py_black_check
+    - name: flake8
+      run: make http_handler_py_flake8
+
+  function_instruct_go:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - name: build
+      run: |
+        make ci_build_gofunctions
+        docker-compose ps
+    - name: test
+      run: make instruct_go_docker_test
+    - name: build
+      run: make instruct_go_docker_build
+    - name: run docker
+      run: make instruct_go_docker_run_directory
+    - name: run local
+      env:
+        LOCAL_TESTING: true
+      run: make instruct_go_local_run_artifact
+
+  function_pass_fail_py:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - name: build
+      run: |
+        make ci_build_pyfunctions
+        docker-compose ps
+    - name: run
+      run: make pass_fail_py_run
+    - name: pytest
+      run: make pass_fail_py_test
+    - name: black
+      run: make pass_fail_py_black_check
+    - name: flake8
+      run: make pass_fail_py_flake8
+
+  terraform_validate:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - name: build
+      run: |
+        make ci_build_deployer
+        docker-compose ps
+    - name: validate
+      run: make terraform
