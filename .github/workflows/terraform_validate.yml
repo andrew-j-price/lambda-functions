@@ -1,0 +1,32 @@
+name: terraform:validate
+
+# NOTE: workflow_run works only on default branch
+# https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows#workflow_run
+# ALTERNATIVE: to evaluate: https://github.com/marketplace/actions/wait-on-check
+on:
+  workflow_run:
+    workflows: 
+      - "ci_testing"
+    types:
+      - completed
+
+jobs:
+  on-success:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - run: echo "Dependent workflow was a success"
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: build
+        run: |
+          make ci_build_deployer
+          docker-compose ps
+      - name: validate
+        run: make terraform
+
+  on-failure:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    steps:
+      - run: echo "Dependent workflow was a failure"

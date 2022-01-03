@@ -1,0 +1,41 @@
+version: "3.2"
+
+services:
+  gofunctions:
+    build:
+      context: ./docker/gofunctions
+      dockerfile: Dockerfile
+    image: gofunctions
+    command: sleep 365d
+    environment:
+      - LOCAL_TESTING=true
+      - SOMETHING=else
+    working_dir: /git
+    volumes:
+      - ./:/git
+
+  pyfunctions:
+    build:
+      context: ./docker/pyfunctions
+      dockerfile: Dockerfile
+    image: pyfunctions
+    command: sleep 365d
+    environment:
+      - ATTEST_BASE_URL=https://attest.linecas.com
+      - PYTHONDONTWRITEBYTECODE=1
+      - SOMETHING=else
+    working_dir: /git
+    volumes:
+      - ./:/git
+
+  deployer:
+    build:
+      context: ./docker/deployer
+      dockerfile: Dockerfile
+    image: deployer
+    command: sleep 365d
+    environment:
+      - SOMETHING=else
+    working_dir: /git
+    volumes:
+      - ./:/git
