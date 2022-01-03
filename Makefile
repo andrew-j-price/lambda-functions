@@ -97,6 +97,9 @@ http_handler_go_docker_run_directory:
 http_handler_go_docker_build:
 	docker-compose exec -T gofunctions bash -c "cd http_handler_go && CGO_ENABLED=0 go build -o handler"
 
+http_handler_go_api:
+	cd ~/code/iaas/terraform/aws-integrations && curl "`terraform output -raw api_gw_base_url`/hi?name=jack"
+
 
 # function:http_handler_py
 function_http_handler_py: run_http_handler_py line_breaks1 test_http_handler_py line_breaks2 black_check_http_handler_py line_breaks3 flake8_http_handler_py
@@ -118,6 +121,9 @@ black_check_http_handler_py:
 flake8_http_handler_py:
 	docker-compose exec -T pyfunctions flake8 --max-line-length 120 /git/http_handler_py/lambda_function.py && \
 	docker-compose exec -T pyfunctions flake8 --max-line-length 120 /git/http_handler_py/test_lambda_function.py
+
+http_handler_py_api:
+	cd ~/code/iaas/terraform/aws-integrations && curl "`terraform output -raw api_gw_base_url`/hello?name=jack"
 
 
 # function:pass_fail_py
