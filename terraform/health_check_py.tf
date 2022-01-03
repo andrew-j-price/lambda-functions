@@ -1,6 +1,6 @@
 data "archive_file" "health_check_py" {
   type        = "zip"
-  source_dir  = "${path.module}/health_check_py"
+  source_dir  = "${path.module}/../health_check_py"
   output_path = "${path.module}/health_check_py.zip"
 }
 

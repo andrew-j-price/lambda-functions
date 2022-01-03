@@ -1,6 +1,6 @@
 data "archive_file" "http_handler_py" {
   type        = "zip"
-  source_dir  = "${path.module}/http_handler_py"
+  source_dir  = "${path.module}/../http_handler_py"
   output_path = "${path.module}/http_handler_py.zip"
 }
 

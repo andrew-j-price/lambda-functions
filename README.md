@@ -12,7 +12,7 @@ This is an educational repo based primarily around AWS Lambda
 ## module usage
 ```golang
 module "lambda_functions" {
-  source          = "github.com/andrew-j-price/lambda-functions"
+  source          = "github.com/andrew-j-price/lambda-functions//terraform"
   common_tags     = merge(local.common_tags, var.global_tags)
   sns_emails      = ["andrew@example.com"]
   sns_webhook_url = "https://api.example.com/sns"

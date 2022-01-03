@@ -146,10 +146,10 @@ flake8_pass_fail_py:
 terraform: terraform_init terraform_validate
 
 terraform_init:
-	docker-compose exec -T deployer terraform init
+	docker-compose exec -T deployer bash -c "cd terraform && terraform init"
 
 terraform_validate:
-	docker-compose exec -T deployer terraform validate
+	docker-compose exec -T deployer bash -c "cd terraform && terraform validate"
 
 
 # helpers

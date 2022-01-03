@@ -1,6 +1,6 @@
 data "archive_file" "http_handler_go" {
   type        = "zip"
-  source_file = "${path.module}/http_handler_go/handler"
+  source_file = "${path.module}/../http_handler_go/handler"
   output_path = "${path.module}/http_handler_go.zip"
 }
 

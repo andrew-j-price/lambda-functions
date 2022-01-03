@@ -1,6 +1,6 @@
 data "archive_file" "instruct_go" {
   type        = "zip"
-  source_file = "${path.module}/instruct_go/handler"
+  source_file = "${path.module}/../instruct_go/handler"
   output_path = "${path.module}/instruct_go.zip"
 }
 

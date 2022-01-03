@@ -19,9 +19,11 @@ find . -name "build" -type d -exec sudo rm -rf "{}" \;
 find . -name "dist" -type d -exec sudo rm -rf "{}" \;
 find . -name ".eggs" -type d -exec sudo rm -rf "{}" \;
 find . -name "*.egg-info" -type d -exec sudo rm -rf "{}" \;
-find . -name "*.pyc" -type f -exec sudo rm -f "{}" \;
 
 # coverage related
 find . -name ".coverage" -type f -exec sudo rm -f "{}" \;
 find . -name "coverage.xml" -type f -exec sudo rm -f "{}" \;
 find . -name "htmlcov" -type d -exec sudo rm -rf "{}" \;
+
+# terraform related
+find ./terraform -name "*.zip" -type f -exec sudo rm -f "{}" \;

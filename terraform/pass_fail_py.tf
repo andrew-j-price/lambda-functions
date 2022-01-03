@@ -1,6 +1,6 @@
 data "archive_file" "pass_fail_py" {
   type        = "zip"
-  source_dir  = "${path.module}/pass_fail_py"
+  source_dir  = "${path.module}/../pass_fail_py"
   output_path = "${path.module}/pass_fail_py.zip"
 }
 
