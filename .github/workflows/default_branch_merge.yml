@@ -23,7 +23,7 @@ jobs:
           make ci_build_deployer
           docker-compose ps
       - name: validate
-        run: make terraform
+        run: make terraform_validation
 
   on-failure:
     runs-on: ubuntu-latest

@@ -101,7 +101,7 @@ jobs:
     - name: flake8
       run: make pass_fail_py_flake8
 
-  terraform_validate:
+  terraform_validation:
     runs-on: ubuntu-latest
     steps:
     - name: checkout
@@ -111,4 +111,4 @@ jobs:
         make ci_build_deployer
         docker-compose ps
     - name: validate
-      run: make terraform
+      run: make terraform_validation

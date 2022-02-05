@@ -149,7 +149,7 @@ pass_fail_py_flake8:
 
 
 # terraform
-terraform: terraform_init terraform_validate
+terraform_validation: terraform_init terraform_validate
 
 terraform_init:
 	docker-compose exec -T deployer bash -c "cd terraform && terraform init"
