@@ -62,38 +62,3 @@ resource "aws_cloudwatch_metric_alarm" "pass_fail_py_failure" {
     return_data = true
   }
 }
-
-resource "aws_cloudwatch_dashboard" "pass_fail_py" {
-  dashboard_name = "PassFailMonitoring"
-  dashboard_body = <<EOF
-{
-    "widgets": [
-        {
-            "type": "metric",
-            "x": 0,
-            "y": 0,
-            "width": 24,
-            "height": 6,
-            "properties": {
-                "metrics": [
-                    [ { "expression": "FILL(METRICS(), LINEAR)", "label": "Trend of", "id": "e1" } ],
-                    [ "AWS/Lambda", "Errors", "FunctionName", "pass_fail_py", { "id": "m1", "label": "Result" } ]
-                ],
-                "view": "timeSeries",
-                "stacked": false,
-                "region": "us-east-2",
-                "stat": "Maximum",
-                "period": 1,
-                "yAxis": {
-                    "left": {
-                        "label": "Result",
-                        "showUnits": false
-                    }
-                },
-                "title": "Pass / Fail - Results"
-            }
-        }
-    ]
-}
-EOF
-}

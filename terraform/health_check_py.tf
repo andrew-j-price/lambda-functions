@@ -111,42 +111,6 @@ resource "aws_cloudwatch_metric_alarm" "health_check_py_return_code_failure" {
   treat_missing_data        = "ignore"
 }
 
-// Return Code - Dashboard
-resource "aws_cloudwatch_dashboard" "health_check_py" {
-  dashboard_name = "HealthCheckMonitoring"
-  dashboard_body = <<EOF
-{
-    "widgets": [
-        {
-            "height": 6,
-            "width": 24,
-            "y": 0,
-            "x": 0,
-            "type": "metric",
-            "properties": {
-                "metrics": [
-                    [ { "expression": "FILL(METRICS(), LINEAR)", "label": "Trend of", "id": "e1", "region": "us-east-2" } ],
-                    [ "LogMetrics", "LambdaHealthCheckPyReturnCode", { "id": "m1", "label": "Return Code" } ]
-                ],
-                "view": "timeSeries",
-                "stacked": false,
-                "region": "us-east-2",
-                "stat": "Maximum",
-                "period": 1,
-                "title": "LambdaHealthCheckPyReturnCode",
-                "setPeriodToTimeRange": true,
-                "yAxis": {
-                    "left": {
-                        "label": "Return Code"
-                    }
-                }
-            }
-        }
-    ]
-}
-EOF
-}
-
 /*
 // NOTE: not as useful, but keeping for reference
 resource "aws_cloudwatch_log_metric_filter" "health_check_py_success" {

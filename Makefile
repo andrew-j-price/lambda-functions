@@ -32,7 +32,7 @@ exec_deployer:
 	docker-compose exec deployer bash
 
 exec_go:
-	docker-compose exec gofunctions sh
+	docker-compose exec gofunctions bash
 
 exec_py:
 	docker-compose exec pyfunctions bash
