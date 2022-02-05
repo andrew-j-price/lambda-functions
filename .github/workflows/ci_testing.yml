@@ -10,7 +10,7 @@ on:
     - main
 
 env:
-  SOMETHING: else
+  RANDOM: fact
 
 jobs:
   function_health_check_py:
