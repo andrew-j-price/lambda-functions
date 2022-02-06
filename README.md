@@ -29,6 +29,7 @@ refer to `Makefile` for complete workflows
 # install packages
 cd <dir>
 python -m pip install --target . requests
+python -m pip install --target . debugpy
 
 # run locally (either command)
 make health_check_py_run

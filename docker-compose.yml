@@ -24,6 +24,8 @@ services:
       - ATTEST_BASE_URL=https://attest.linecas.com
       - PYTHONDONTWRITEBYTECODE=1
       - SOMETHING=else
+    ports:
+      - 5365:5678
     working_dir: /git
     volumes:
       - ./:/git

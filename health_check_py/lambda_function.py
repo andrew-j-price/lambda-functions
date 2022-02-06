@@ -1,3 +1,4 @@
+import debugpy
 import json
 import logging
 import os
@@ -122,6 +123,7 @@ class LambdaHandler:
             "region": os.environ.get("AWS_REGION", "us-fake-3"),
             "return_code": self.return_code,
         }
+        debugpy.breakpoint()
         return all_results
 
     def main(self, event=None, context=None):
@@ -151,6 +153,7 @@ class LambdaHandler:
             # NOTE: need double quotes from json.dumps
             # NOTE: printing only response not necessary for JSON CloudWatch Filter Patterns
             # NOTE: return does not have to use json.dumps
+            debugpy.breakpoint()
             return response
 
 

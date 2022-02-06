@@ -87,6 +87,9 @@ health_check_py_flake8:
 	docker-compose exec -T pyfunctions flake8 --max-line-length 120 /git/health_check_py/lambda_function.py && \
 	docker-compose exec -T pyfunctions flake8 --max-line-length 120 /git/health_check_py/test_lambda_function.py
 
+health_check_py_debugpy:
+	docker-compose exec -T pyfunctions python -m debugpy --listen 0.0.0.0:5678 --wait-for-client /git/health_check_py/lambda_function.py
+
 
 # function:http_handler_go
 function_http_handler_go: http_handler_go_docker_build line_breaks1 http_handler_go_docker_run_directory
