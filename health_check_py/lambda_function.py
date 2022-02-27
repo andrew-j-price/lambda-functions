@@ -15,6 +15,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 class LambdaHandler:
     def __init__(self):
         self.return_code = 0
+        self.proxies = None  # default for unit-tests
 
     def log_event_context(self, event, context):
         """Logs information on invoked Lambda function"""
