@@ -24,12 +24,12 @@ resource "aws_lambda_function" "health_check_py" {
      For IPv6 outbound traffic, tried egress-only-gateway but would not work for Lambda functions however did work on EC2 instances in the same private subnet
      When using Squid Proxy Server, was able to get outbound IPv4 and IPv6 traffic
   */
-  // /*
+  /*
   vpc_config {
     subnet_ids         = var.subnet_ids
     security_group_ids = [aws_security_group.lambda_default_secgroup.id]
   }
-  // */
+  */
   tags = merge(var.common_tags, {
     func = "health_check_py"
   })

@@ -32,10 +32,7 @@ services:
       - ./:/git
 
   deployer:
-    build:
-      context: ./docker/deployer
-      dockerfile: Dockerfile
-    image: deployer
+    image: andrewprice/ci:bullseye
     command: sleep 365d
     environment:
       - SOMETHING=else
