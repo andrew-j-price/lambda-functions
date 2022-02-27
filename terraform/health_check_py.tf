@@ -14,20 +14,22 @@ resource "aws_lambda_function" "health_check_py" {
   source_code_hash = filebase64sha256(data.archive_file.health_check_py.output_path)
   environment {
     variables = {
-      ATTEST_BASE_URL = var.attest_base_url
+      ATTEST_BASE_URL = var.attest_base_url,
+      PROXY_SERVER = var.proxy_server_url,
     }
   }
   /* NOTES:
      vpc_config is optional, internet bound traffic does not have to be in VPC, but VPC bound traffic must be in private subnet
      For IPv4 outbound traffic, VPC needs NAT Gateway or NAT Instance
      For IPv6 outbound traffic, tried egress-only-gateway but would not work for Lambda functions however did work on EC2 instances in the same private subnet
+     When using Squid Proxy Server, was able to get outbound IPv4 and IPv6 traffic
   */
-  /*
+  // /*
   vpc_config {
     subnet_ids         = var.subnet_ids
     security_group_ids = [aws_security_group.lambda_default_secgroup.id]
   }
-  */
+  // */
   tags = merge(var.common_tags, {
     func = "health_check_py"
   })

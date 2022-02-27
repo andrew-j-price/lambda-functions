@@ -22,6 +22,7 @@ services:
     command: sleep 365d
     environment:
       - ATTEST_BASE_URL=https://attest.linecas.com
+      - PROXY_SERVER=http://squid.linecas.com:3128
       - PYTHONDONTWRITEBYTECODE=1
       - SOMETHING=else
     ports:

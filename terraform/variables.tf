@@ -18,6 +18,11 @@ variable "lambda_role_arn" {
   default     = ["arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"]
 }
 
+variable "proxy_server_url" {
+  type    = string
+  default = "http://squid.example.com:3128"
+}
+
 variable "sns_emails" {
   type    = list(string)
   default = ["somebody@example.com"]

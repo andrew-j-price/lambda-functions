@@ -2,7 +2,11 @@ import json
 import logging
 import os
 import requests
+import socket
 import urllib3
+from netifaces import interfaces, ifaddresses, AF_INET
+from requests.exceptions import ConnectionError
+from urllib.parse import urlparse
 
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s][%(funcName)s] %(message)s", force=True)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -35,7 +39,7 @@ class LambdaHandler:
         """
         try:
             attest_base_url = os.environ.get("ATTEST_BASE_URL", "http://127.0.0.1:5005")
-            response = requests.get(f"{attest_base_url}/default", verify=True, timeout=3.0)
+            response = requests.get(f"{attest_base_url}/default", verify=True, proxies=self.proxies, timeout=3.0)
             logging.info(f"STATUS_CODE: {response.status_code}")
             if response.status_code == 200 and "host_name" in response.text:
                 data = json.loads(response.text)
@@ -71,7 +75,7 @@ class LambdaHandler:
             string: of IP address, otherwise None
         """
         try:
-            response = requests.get("http://whatismyip.akamai.com/", verify=False, timeout=3.0)
+            response = requests.get("http://whatismyip.akamai.com/", verify=False, proxies=self.proxies, timeout=3.0)
             logging.info(f"STATUS_CODE: {response.status_code}")
             if response.status_code == 200:
                 return response.text
@@ -91,7 +95,9 @@ class LambdaHandler:
             string: of IP address, otherwise None
         """
         try:
-            response = requests.get("http://ipv6.whatismyip.akamai.com/", verify=False, timeout=3.0)
+            response = requests.get(
+                "http://ipv6.whatismyip.akamai.com/", verify=False, proxies=self.proxies, timeout=3.0
+            )
             logging.info(f"STATUS_CODE: {response.status_code}")
             if response.status_code == 200:
                 return response.text
@@ -99,11 +105,88 @@ class LambdaHandler:
                 logging.error(f"RESPONSE_TEXT: {response.text}")
                 # NOTE: expected to fail, therefore commenting out
                 # self.return_code = 6
+        except ConnectionError:
+            logging.warning("No IPv6 route available")
         except Exception as e:
             logging.error(f"EXCEPTION: {str(e)}")
             # NOTE: expected to fail, therefore commenting out
             # self.return_code = 6
         return None
+
+    def get_local_ip(self):
+        """
+        TODO better: always return a 169.254 address
+        """
+        try:
+            # trying method
+            for ifaceName in interfaces():
+                addresses = [i["addr"] for i in ifaddresses(ifaceName).setdefault(AF_INET, [{"addr": "No IP addr"}])]
+                logging.info(f"{ifaceName}: {' '.join(addresses)}")
+            # traditional method
+            hostname = socket.gethostname()
+            local_ip = socket.gethostbyname(hostname)
+            return local_ip
+        except Exception as e:
+            logging.error(f"EXCEPTION: {str(e)}")
+            self.return_code = 4
+        return None
+
+    def port_check(self, dest_host, dest_port):
+        """Checks if remote host passes a basic port test
+
+        Args:
+            dest_host (string): name/ip to connec to
+            dest_port (int): tcp port number
+
+        Returns:
+            bool: of result
+        """
+        logging.debug(f"HOST: {dest_host}, PORT: {dest_port}")
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(2)
+        try:
+            result = sock.connect_ex((dest_host, int(dest_port)))
+        except socket.gaierror:
+            logging.warning(f"Address of {dest_host} is unknown")
+            result = 1
+        logging.debug(f"RESULT: {result}")
+        if result == 0:
+            logging.info(f"Port check succeeded to {dest_host} on TCP {dest_port}")
+            return True
+        else:
+            logging.error(f"Port check failed to {dest_host} on TCP {dest_port}")
+            return False
+
+    def set_proxy(self):
+        """Checks if ephemeral proxy server is available, and will use if so
+
+        Returns:
+            bool: if proxy server properties were set for class
+        """
+        parsed = False
+        try:
+            proxy_netloc = urlparse(os.environ.get("PROXY_SERVER", "http://127.0.0.1:3128")).netloc
+            if proxy_netloc == "":
+                raise AttributeError
+            proxy_address = proxy_netloc.split(":")[0]
+            proxy_port = proxy_netloc.split(":")[1]
+            parsed = True
+        except IndexError:
+            logging.warning(f"Received unexpected format parsing: {proxy_netloc}")
+        except AttributeError:
+            logging.warning(f"Very unexpected format parsing: {os.environ.get('PROXY_SERVER')}")
+        if parsed:
+            if self.port_check(proxy_address, proxy_port):
+                self.proxies = {
+                    "http": os.environ.get("PROXY_SERVER", "http://127.0.0.1:3128"),
+                    "https": os.environ.get("PROXY_SERVER", "http://127.0.0.1:3128"),
+                }
+                logging.info("Proxy servers set")
+                return True
+        # If we got here, the proxy server checks failed
+        logging.info("Not using proxy servers")
+        self.proxies = None
+        return False
 
     def actions(self, event):
         """Calls other functions and aggregates results
@@ -119,6 +202,7 @@ class LambdaHandler:
             "force_failure": self.get_force_failure(event),
             "ipv4": self.get_ipv4(),
             "ipv6": self.get_ipv6(),
+            "local_ip": self.get_local_ip(),
             "region": os.environ.get("AWS_REGION", "us-fake-3"),
             "return_code": self.return_code,
         }
@@ -133,6 +217,7 @@ class LambdaHandler:
         """
         try:
             self.log_event_context(event, context)
+            self.set_proxy()
             response = self.actions(event)
         except Exception as e:
             logging.error(f"EXCEPTION: {str(e)}")
