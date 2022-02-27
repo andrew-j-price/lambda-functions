@@ -22,17 +22,17 @@ services:
     command: sleep 365d
     environment:
       - ATTEST_BASE_URL=https://attest.linecas.com
+      - PROXY_SERVER=http://squid.linecas.com:3128
       - PYTHONDONTWRITEBYTECODE=1
       - SOMETHING=else
+    ports:
+      - 5365:5678
     working_dir: /git
     volumes:
       - ./:/git
 
   deployer:
-    build:
-      context: ./docker/deployer
-      dockerfile: Dockerfile
-    image: deployer
+    image: andrewprice/ci:bullseye
     command: sleep 365d
     environment:
       - SOMETHING=else
