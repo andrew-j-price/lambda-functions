@@ -17,11 +17,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: build
       run: |
         make ci_build_pyfunctions
-        docker-compose ps
+        docker compose ps
     - name: run
       run: make health_check_py_run
     - name: pytest
@@ -35,11 +35,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: build
       run: |
         make ci_build_gofunctions
-        docker-compose ps
+        docker compose ps
     - name: build
       run: make http_handler_go_docker_build
     - name: run
@@ -49,11 +49,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: build
       run: |
         make ci_build_pyfunctions
-        docker-compose ps
+        docker compose ps
     - name: run
       run: make http_handler_py_run
     - name: pytest
@@ -67,11 +67,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: build
       run: |
         make ci_build_gofunctions
-        docker-compose ps
+        docker compose ps
     - name: test
       run: make instruct_go_docker_test
     - name: build
@@ -87,11 +87,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: build
       run: |
         make ci_build_pyfunctions
-        docker-compose ps
+        docker compose ps
     - name: run
       run: make pass_fail_py_run
     - name: pytest
@@ -101,14 +101,32 @@ jobs:
     - name: flake8
       run: make pass_fail_py_flake8
 
+  function_random_string_py:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: build
+      run: |
+        make ci_build_pyfunctions
+        docker compose ps
+    - name: run
+      run: make random_string_py_run
+    - name: pytest
+      run: make random_string_py_test
+    - name: black
+      run: make random_string_py_black_check
+    - name: flake8
+      run: make random_string_py_flake8
+
   terraform_validation:
     runs-on: ubuntu-latest
     steps:
     - name: checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: build
       run: |
         make ci_build_deployer
-        docker-compose ps
+        docker compose ps
     - name: validate
       run: make terraform_validation
