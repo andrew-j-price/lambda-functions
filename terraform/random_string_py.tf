@@ -1,7 +1,7 @@
 resource "aws_lambda_function" "random_string_py" {
   filename         = data.archive_file.random_string_py_archive.output_path
   function_name    = "random_string_py"
-  role             = aws_iam_role.lincas_lambda_role.arn
+  role             = aws_iam_role.random_string_py_lambda_exec.arn
   handler          = "lambda_function.lambda_handler"
   runtime          = var.python_runtime
   timeout          = 60
