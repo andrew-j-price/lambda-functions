@@ -90,6 +90,9 @@ health_check_py_flake8:
 health_check_py_debugpy:
 	docker compose exec -T pyfunctions python -m debugpy --listen 0.0.0.0:5678 --wait-for-client /git/health_check_py/lambda_function.py
 
+health_check_py_debugpy:
+	docker-compose exec -T pyfunctions python -m debugpy --listen 0.0.0.0:5678 --wait-for-client /git/health_check_py/lambda_function.py
+
 
 # function:http_handler_go
 function_http_handler_go: http_handler_go_docker_build line_breaks1 http_handler_go_docker_run_directory
@@ -129,7 +132,7 @@ http_handler_py_api:
 	cd ~/code/iaas/terraform/aws-integrations && curl "`terraform output -raw api_gw_base_url`/hello?name=jack"
 
 http_handler_py_debugpy:
-	docker compose exec -T pyfunctions python -m debugpy --listen 0.0.0.0:5678 --wait-for-client /git/http_handler_py/lambda_function.py
+	docker-compose exec -T pyfunctions python -m debugpy --listen 0.0.0.0:5678 --wait-for-client /git/http_handler_py/lambda_function.py
 
 
 # function:pass_fail_py
@@ -177,6 +180,10 @@ random_string_py_black_check:
 random_string_py_flake8:
 	docker compose exec -T pyfunctions flake8 --max-line-length 120 /git/random_string_py/lambda_function.py && \
 	docker compose exec -T pyfunctions flake8 --max-line-length 120 /git/random_string_py/test_lambda_function.py
+
+
+pass_fail_py_debugpy:
+	docker-compose exec -T pyfunctions python -m debugpy --listen 0.0.0.0:5678 --wait-for-client /git/pass_fail_py/lambda_function.py
 
 
 
