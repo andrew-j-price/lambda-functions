@@ -1,6 +1,7 @@
 name: default:branch:merge
 
 # NOTE: workflow_run works only on default branch
+# UPDATE: no longer appears to be the case
 # https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows#workflow_run
 # ALTERNATIVE: to evaluate: https://github.com/marketplace/actions/wait-on-check
 on:
@@ -21,7 +22,7 @@ jobs:
       - name: build
         run: |
           make ci_build_deployer
-          docker-compose ps
+          docker compose ps
       - name: validate
         run: make terraform_validation
 

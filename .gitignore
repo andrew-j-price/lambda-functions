@@ -4,6 +4,8 @@
 *.log
 *.zip
 tmp/*
+terraform/*_lambda_layer
+lambda_response.txt
 
 # go binaries
 handler

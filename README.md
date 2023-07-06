@@ -45,8 +45,9 @@ aws lambda list-functions
 aws lambda invoke --function-name health_check_py health_check_py.log && cat health_check_py.log
 aws lambda invoke --function-name health_check_py --payload '{"force_failure": true}' health_check_py.log && cat health_check_py.log
 
-# cli v2 (WIP)
-aws lambda invoke --function-name health_check_py --log-type Tail --query 'LogResult' --output text |  base64 -d
+# cli v2
+export FUNCTION_NAME=health_check_py
+aws lambda invoke --function-name $FUNCTION_NAME --log-type Tail --query 'LogResult' --output text lambda_response.txt |  base64 -d && printf "\n\n" && cat lambda_response.txt && printf "\n\n"
 
 # logs
 LOG_GROUP='/aws/lambda/health_check_py'

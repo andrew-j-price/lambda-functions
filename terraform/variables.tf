@@ -12,6 +12,11 @@ variable "common_tags" {
   default = {}
 }
 
+variable "enable_function_url" {
+  type    = bool
+  default = false
+}
+
 variable "lambda_role_arn" {
   type        = list(string)
   description = "ARN of managed policy that needs to be attached to role created for lambda"
@@ -21,6 +26,11 @@ variable "lambda_role_arn" {
 variable "proxy_server_url" {
   type    = string
   default = "http://squid.example.com:3128"
+}
+
+variable "python_runtime" {
+  type    = string
+  default = "python3.9"
 }
 
 variable "sns_emails" {
